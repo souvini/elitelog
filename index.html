@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Elite Log - Sistema de Solicitação de Serviços</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+    <!-- Login Overlay - Agora opcional -->
+    <div id="loginOverlay" style="display: none;">
+        <div class="login-box">
+            <h3>🔐 Login Administrador</h3>
+            <p style="color: #666; margin-bottom: 20px;">Apenas para administradores</p>
+            <input type="text" id="loginUser" placeholder="Usuário">
+            <input type="password" id="loginPass" placeholder="Senha">
+            <button onclick="fazerLogin()">Entrar como Admin</button>
+            <div id="loginError" class="login-error"></div>
+            <button onclick="fecharLogin()" style="background: #6b7280; margin-top: 10px;">🔙 Voltar ao Modo
+                Visitante</button>
+            <small style="display: block; margin-top: 15px; color: #999;">Admin: admin / 123456</small>
+        </div>
+    </div>
+    <div class="container" id="mainContainer" style="display: none;">
+        <!-- Barra superior com botões admin -->
+        <div class="admin-bar">
+        <!-- Botão Dark Mode 
+        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌓 Dark/Light</button>-->
+        <button class="logout-btn" id="themeToggle" onclick="toggleTheme()">🌓 Dark/Light</button>
+        <span id="userTypeBadge" class="admin-badge" style="display: none;">👑 Administrador</span>
+        <button id="logoutBtn" class="logout-btn" onclick="logout()" style="display: none;">🚪 Sair</button>
+    </div>
+
+        <!-- Header centralizado -->
+        <div class="header">
+            <h1>ELITE LOG</h1>
+            <div class="subtitle">Sistema de Solicitação de Serviços</div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="form">📝 Nova Solicitação</button>
+            <button class="tab-btn" data-tab="list">📋 Lista de Serviços</button>
+        </div>
+
+        <!-- Aba Formulário -->
+        <div class="tab-content active" id="tab-form">
+            <form id="form">
+                <div class="form-group">
+                    <label>Operador <span class="required">*</span></label>
+                    <input type="text" id="operador" placeholder="Digite o nome do operador" required
+                        autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label>Tipo de Serviço <span class="required">*</span></label>
+                    <select id="servico" required>
+                        <option value="">Selecione o tipo de serviço</option>
+                        <option>Manutenção</option>
+                        <option>Retirada</option>
+                        <option>Instalação Comum</option>
+                        <option>Auto Elite Max Moto</option>
+                        <option>Auto Elite Max Carro</option>
+                        <option>Visita</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Nome do Cliente <span class="required">*</span></label>
+                    <input type="text" id="nome" placeholder="Nome completo do cliente" required autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label>Placa do Veículo <span class="required">*</span></label>
+                    <input type="text" id="placa" placeholder="AAA-1234 ou ABC1D23" required autocomplete="off"
+                        maxlength="8">
+                    <small style="color: #94a3b8; font-size: 12px; margin-top: 5px; display: block;">Formatos: AAA-1234
+                        (antigo) ou ABC1D23 (Mercosul)</small>
+                </div>
+                <div class="form-group">
+                    <label>Cidade <span class="required">*</span></label>
+                    <div class="autocomplete-container">
+                        <input type="text" id="cidade" required placeholder="Digite o nome da cidade"
+                            autocomplete="off">
+                        <div class="suggestions-list" id="suggestionsList"></div>
+                        <div class="cities-loading-indicator" id="loadingIndicator" style="display: none;">🔄</div>
+                    </div>
+                </div>
+                <button type="submit" id="submitBtn">📤 Enviar Solicitação</button>
+                <div class="loading" id="loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Enviando...</p>
+                </div>
+                <div class="success" id="msg" style="display: none;">✅ Solicitação enviada com sucesso!</div>
+                <div class="error" id="errorMsg" style="display: none;">❌ Erro ao enviar. Tente novamente.</div>
+            </form>
+        </div>
+
+        <!-- Aba Lista -->
+        <div class="tab-content" id="tab-list">
+            <div class="servicos-header">
+                <h2>📋 Serviços Registrados</h2>
+                <div class="search-box"><input type="text" id="searchInput" placeholder="🔍 Buscar..."
+                        autocomplete="off"></div>
+                <select id="filterStatus" class="filter-status">
+                    <option value="">Todos os status</option>
+                    <option value="rota">✅ Rota Pré-montada</option>
+                    <option value="espera">⏳ Em espera</option>
+                    <option value="finalizado">✔️ Finalizado</option>
+                </select>
+                <button class="refresh-btn" id="refreshBtn">🔄 Atualizar</button>
+            </div>
+            <div class="stats-container" id="statsContainer"></div>
+            <div class="table-container">
+                <div id="loadingTable" style="display: none; text-align: center; padding: 40px;">
+                    <div class="spinner"></div>
+                    <p>Carregando...</p>
+                </div>
+                <div id="tableContent"></div>
+            </div>
+            <div class="pagination" id="pagination"></div>
+        </div>
+    </div>
+    <script src="/static/js/script.js"></script>
+</body>
+
+</html>

@@ -11,7 +11,7 @@ const app = express();
 // ===============================
 // 🔐 CONFIG
 // ===============================
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3003;
 const SESSION_SECRET = process.env.SESSION_SECRET || 'default_secret';
 
 // ===============================
@@ -34,8 +34,7 @@ app.use(session({
 // ===============================
 // 📁 ARQUIVOS ESTÁTICOS
 // ===============================
-app.use(express.static(path.join(__dirname, 'public')));
-
+app.use('/static', express.static(path.join(__dirname, 'static')));
 // ===============================
 // 🗄️ BANCO
 // ===============================

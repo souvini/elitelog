@@ -3,7 +3,6 @@ let todosServicos = [], cidades = [], currentPage = 1, itemsPerPage = 10;
 
 // Elementos DOM
 document.addEventListener('DOMContentLoaded', () => {
-
     const mainContainer = document.getElementById("mainContainer");
     const loginOverlay = document.getElementById("loginOverlay");
 
@@ -13,7 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     iniciarSessao();
-
 });
 
 const userTypeBadge = document.getElementById("userTypeBadge");
@@ -36,8 +34,102 @@ const tableContent = document.getElementById("tableContent");
 const paginationDiv = document.getElementById("pagination");
 const statsContainer = document.getElementById("statsContainer");
 
+// ========== DICIONÁRIO DE ROTAS AGRUPADAS ==========
+function obterRotaPorCidade(cidade) {
+    const ROTAS = {
+        "Rota Horizonte": ["Horizonte", "Pacajus", "Chorozinho", "Ocara"],
+        "Rota Oeste": ["Caucaia", "São Gonçalo do Amarante", "Paracuru", "São José do Ribamar"],
+        "Rota Sul": ["Maracanaú", "Maranguape", "Pacatuba", "Guaiúba"],
+        "Rota Norte": ["Fortaleza", "Aquiraz", "Eusébio", "Itaitinga"],
+        "Rota Sertão Central": ["Quixadá", "Quixeramobim", "Senador Pompeu", "Mombaça"],
+        "Rota Vale do Jaguaribe": ["Limoeiro do Norte", "Russas", "Morada Nova", "Jaguaribe"],
+        "Rota Cariri": ["Juazeiro do Norte", "Crato", "Barbalha", "Missão Velha"],
+        "Rota Sobral": ["Sobral", "Forquilha", "Groaíras", "Cariré"],
+        "Rota Itapipoca": ["Itapipoca", "Amontada", "Itarema", "Trairi"],
+        "Rota Canindé": ["Canindé", "Boa Viagem", "Madalena", "Paramoti"]
+    };
+    
+    for (const [nomeRota, cidades] of Object.entries(ROTAS)) {
+        if (cidades.includes(cidade)) {
+            return nomeRota;
+        }
+    }
+    return null;
+}
+
+// ========== FUNÇÕES DE STATUS POR ROTA ==========
+function calcularStatusPorRota(servicos) {
+    const rotasCount = {};
+    const servicosAtivos = servicos.filter(s => s.statusManual !== 'finalizado');
+    
+    servicosAtivos.forEach(servico => {
+        const rota = obterRotaPorCidade(servico.cidade);
+        if (rota) {
+            rotasCount[rota] = (rotasCount[rota] || 0) + 1;
+        }
+    });
+    
+    return rotasCount;
+}
+
+function obterStatusServico(servico, rotasCount) {
+    if (servico.statusManual === 'finalizado') {
+        return { status: "finalizado", texto: "✔️ Finalizado", classe: "status-finalizado" };
+    }
+    
+    const rota = obterRotaPorCidade(servico.cidade);
+    
+    if (rota) {
+        const quantidade = rotasCount[rota] || 0;
+        if (quantidade >= 4) {
+            return { status: "rota", texto: "✅ Rota Pré-montada", classe: "status-rota" };
+        } else {
+            const faltam = 4 - quantidade;
+            return { status: "espera", texto: `⏳ Aguardando +${faltam} na rota`, classe: "status-espera" };
+        }
+    }
+    
+    return { status: "individual", texto: "📍 Rota em Espera", classe: "status-espera" };
+}
+
+function renderizarEstatisticas(servicos) {
+    const rotasCount = calcularStatusPorRota(servicos);
+    const finalizados = servicos.filter(s => s.statusManual === 'finalizado').length;
+    
+    const rotasComRota = Object.entries(rotasCount).filter(([_, count]) => count >= 4);
+    const rotasSemRota = Object.entries(rotasCount).filter(([_, count]) => count < 4);
+    
+    let html = `<div class="stats-title">📊 Status das Rotas Agrupadas <small>(Mínimo 4 serviços por rota)</small></div><div class="stats-grid">`;
+    
+    rotasComRota.forEach(([rota, q]) => {
+        html += `<div class="stat-card"><span class="stat-city">✅ ${rota}</span><span class="stat-count highlight">${q} serviços</span></div>`;
+    });
+    
+    rotasSemRota.forEach(([rota, q]) => {
+        const faltam = 4 - q;
+        html += `<div class="stat-card"><span class="stat-city">⏳ ${rota}</span><span class="stat-count">${q} serviços (faltam ${faltam})</span></div>`;
+    });
+    
+    const servicosAtivos = servicos.filter(s => s.statusManual !== 'finalizado');
+    const cidadesNaoMapeadas = servicosAtivos.filter(s => !obterRotaPorCidade(s.cidade));
+    if (cidadesNaoMapeadas.length > 0) {
+        html += `<div class="stat-card"><span class="stat-city">📍Rota em Espera</span><span class="stat-count">${cidadesNaoMapeadas.length} serviços</span></div>`;
+    }
+    
+    if (rotasComRota.length === 0 && rotasSemRota.length === 0 && finalizados === 0 && cidadesNaoMapeadas.length === 0) {
+        html += '<div class="stat-card"><span class="stat-city">Nenhum serviço ativo</span></div>';
+    }
+    
+    if (finalizados > 0) {
+        html += `<div class="stat-card"><span class="stat-city">✔️ Finalizados</span><span class="stat-count">${finalizados} serviços</span></div>`;
+    }
+    
+    statsContainer.innerHTML = html + `</div>`;
+}
+
 // ========== FUNÇÕES DE LOGIN ==========
 window.abrirLoginAdmin = function () {
+    const loginOverlay = document.getElementById("loginOverlay");
     loginOverlay.style.display = "flex";
     document.getElementById("loginUser").value = "";
     document.getElementById("loginPass").value = "";
@@ -45,6 +137,7 @@ window.abrirLoginAdmin = function () {
 };
 
 window.fecharLogin = function () {
+    const loginOverlay = document.getElementById("loginOverlay");
     loginOverlay.style.display = "none";
 };
 
@@ -71,9 +164,10 @@ window.fazerLogin = async function () {
         if (data.ok) {
             isAdmin = true;
             localStorage.setItem("isAdmin", "true");
+            const loginOverlay = document.getElementById("loginOverlay");
             loginOverlay.style.display = "none";
             atualizarInterfaceAdmin();
-            carregarServicos(); // Recarrega para mostrar todos os serviços
+            carregarServicos();
             alert("✅ Login realizado com sucesso! Agora você tem permissões de administrador.");
         } else {
             errorSpan.textContent = "❌ Usuário ou senha incorretos";
@@ -95,7 +189,7 @@ window.logout = async function () {
         localStorage.removeItem("isAdmin");
         isAdmin = false;
         atualizarInterfaceAdmin();
-        carregarServicos(); // Recarrega para mostrar apenas serviços ativos
+        carregarServicos();
         alert("👋 Você voltou ao modo visitante");
     }
 };
@@ -104,7 +198,6 @@ function atualizarInterfaceAdmin() {
     if (isAdmin) {
         userTypeBadge.style.display = "inline-block";
         logoutBtn.style.display = "inline-block";
-        // Adiciona botão na lista de serviços (se não existir)
         const adminBar = document.querySelector('.admin-bar');
         if (!document.querySelector('.admin-login-btn')) {
             const loginBtn = document.createElement('button');
@@ -120,13 +213,15 @@ function atualizarInterfaceAdmin() {
         const adminBtn = document.querySelector('.admin-login-btn');
         if (adminBtn) adminBtn.remove();
 
-        // Adiciona botão para login admin na barra
         const adminBar = document.querySelector('.admin-bar');
         if (!document.querySelector('.fazer-login-btn')) {
             const loginBtn = document.createElement('button');
             loginBtn.className = 'logout-btn fazer-login-btn';
             loginBtn.textContent = '🔐 Login Admin';
-            loginBtn.onclick = abrirLoginAdmin;
+            loginBtn.onclick = () => {
+                const loginOverlay = document.getElementById("loginOverlay");
+                loginOverlay.style.display = "flex";
+            };
             loginBtn.style.background = '#3e927b';
             adminBar.insertBefore(loginBtn, adminBar.firstChild);
         }
@@ -135,10 +230,11 @@ function atualizarInterfaceAdmin() {
 
 // Iniciar como visitante
 function iniciarSessao() {
+    const mainContainer = document.getElementById("mainContainer");
+    const loginOverlay = document.getElementById("loginOverlay");
     mainContainer.style.display = "block";
     loginOverlay.style.display = "none";
 
-    // Verifica se já tem admin salvo
     const savedAdmin = localStorage.getItem("isAdmin");
     if (savedAdmin === "true") {
         isAdmin = true;
@@ -166,33 +262,6 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
         if (tabId === "list") carregarServicos();
     });
 });
-
-// Status helpers
-function calcularStatusPorCidade(servicos) {
-    const contagem = {};
-    servicos.filter(s => s.statusManual !== 'finalizado').forEach(s => contagem[s.cidade] = (contagem[s.cidade] || 0) + 1);
-    return contagem;
-}
-
-function obterStatusServico(servico, contagem) {
-    if (servico.statusManual === 'finalizado') return { status: "finalizado", texto: "✔️ Finalizado", classe: "status-finalizado" };
-    const qtd = contagem[servico.cidade] || 0;
-    return qtd >= 4 ? { status: "rota", texto: "✅ Rota Pré-montada", classe: "status-rota" } : { status: "espera", texto: "⏳ Em espera por rota", classe: "status-espera" };
-}
-
-function renderizarEstatisticas(servicos) {
-    const contagem = calcularStatusPorCidade(servicos);
-    const comRota = Object.entries(contagem).filter(([_, c]) => c >= 4);
-    const semRota = Object.entries(contagem).filter(([_, c]) => c < 4);
-    const finalizados = servicos.filter(s => s.statusManual === 'finalizado').length;
-
-    let html = `<div class="stats-title">📊 Status das Rotas por Cidade <small>(Mínimo 4 serviços)</small></div><div class="stats-grid">`;
-    comRota.forEach(([cid, q]) => html += `<div class="stat-card"><span class="stat-city">✅ ${cid}</span><span class="stat-count highlight">${q} serviços</span></div>`);
-    semRota.forEach(([cid, q]) => html += `<div class="stat-card"><span class="stat-city">⏳ ${cid}</span><span class="stat-count">${q} serviços (faltam ${4 - q})</span></div>`);
-    if (!comRota.length && !semRota.length && finalizados === 0) html += '<div class="stat-card"><span class="stat-city">Nenhum serviço ativo</span></div>';
-    if (finalizados > 0) html += `<div class="stat-card"><span class="stat-city">✔️ Finalizados</span><span class="stat-count">${finalizados} serviços</span></div>`;
-    statsContainer.innerHTML = html + `</div>`;
-}
 
 // API Calls
 window.finalizarServico = async function (id) {
@@ -234,6 +303,7 @@ window.deletarServico = async function (id) {
     } catch { alert("❌ Erro!"); }
 };
 
+// FUNÇÃO PRINCIPAL DE CARREGAR SERVIÇOS (ATUALIZADA COM ROTAS)
 async function carregarServicos() {
     loadingTable.style.display = "block";
     tableContent.innerHTML = "";
@@ -244,13 +314,16 @@ async function carregarServicos() {
         if (!res.ok) throw new Error();
         todosServicos = await res.json();
         todosServicos = todosServicos.map(s => ({ ...s, statusManual: s.statusManual || "ativo" }));
-        const contagem = calcularStatusPorCidade(todosServicos);
-        todosServicos = todosServicos.map(s => ({ ...s, ...obterStatusServico(s, contagem) }));
+        
+        // Usar a nova função de contagem por ROTA
+        const rotasCount = calcularStatusPorRota(todosServicos);
+        todosServicos = todosServicos.map(s => ({ ...s, ...obterStatusServico(s, rotasCount) }));
+        
         renderizarEstatisticas(todosServicos);
         aplicarFiltro();
     } catch (err) {
         console.error(err);
-        tableContent.innerHTML = `❌ Erro ao carregar serviços. Verifique se o servidor está online.`;
+        tableContent.innerHTML = `<div class="no-data">❌ Erro ao carregar serviços. Verifique se o servidor está online.</div>`;
     } finally { loadingTable.style.display = "none"; }
 }
 
@@ -280,13 +353,13 @@ function renderizarTabela(servicos) {
         html += `<tr class="${s.status === 'finalizado' ? 'finalizado' : ''}">
                     <td>${s.id}</td>
                     <td>${new Date(s.data).toLocaleString('pt-BR')}</td>
-                    <td>${escapeHtml(s.operador)}</td>
-                    <td>${escapeHtml(s.servico)}</td>
-                    <td>${escapeHtml(s.nome)}</td>
-                    <td><strong>${escapeHtml(s.placa)}</strong></td>
-                    <td>${escapeHtml(s.cidade)}</td>
-                    <td><span class="status-badge ${s.classe}">${s.texto}</span></td>
-                    <td>`;
+                    <td>${escapeHtml(s.operador)}</td`;
+        html += `<td>${escapeHtml(s.servico)}</td`;
+        html += `<td>${escapeHtml(s.nome)}</td`;
+        html += `<td><strong>${escapeHtml(s.placa)}</strong></td`;
+        html += `<td>${escapeHtml(s.cidade)}</td`;
+        html += `<td><span class="status-badge ${s.classe}">${s.texto}</span></td`;
+        html += `<td>`;
 
         if (isAdmin) {
             if (s.status !== 'finalizado') {
@@ -432,15 +505,36 @@ form.addEventListener("submit", async e => {
 });
 
 // ========== DARK MODE ==========
-function toggleTheme() {
+window.toggleTheme = function() {
     const body = document.body;
+    const themeIcon = document.getElementById('themeIcon');
+    const themeText = document.getElementById('themeText');
+    
     if (body.classList.contains('dark')) {
         body.classList.remove('dark');
         localStorage.setItem('theme', 'light');
+        if (themeIcon) themeIcon.innerHTML = '☀️';
+        if (themeText) themeText.innerHTML = 'Light';
     } else {
         body.classList.add('dark');
         localStorage.setItem('theme', 'dark');
+        if (themeIcon) themeIcon.innerHTML = '🌙';
+        if (themeText) themeText.innerHTML = 'Dark';
     }
+};
+
+// Carregar tema salvo
+const savedTheme = localStorage.getItem('theme');
+const themeIcon = document.getElementById('themeIcon');
+const themeText = document.getElementById('themeText');
+
+if (savedTheme === 'dark') {
+    document.body.classList.add('dark');
+    if (themeIcon) themeIcon.innerHTML = '🌙';
+    if (themeText) themeText.innerHTML = 'Dark';
+} else {
+    if (themeIcon) themeIcon.innerHTML = '☀️';
+    if (themeText) themeText.innerHTML = 'Light';
 }
 
 function normalizarPlaca(p) { return p.replace(/[-\s]/g, '').toUpperCase(); }

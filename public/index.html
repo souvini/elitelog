@@ -8,33 +8,34 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="/static/css/style.css">
-</head> 
-
+</head>
 
 <body>
-    <!-- Login Overlay - Agora opcional -->
+    <!-- Login Overlay -->
     <div id="loginOverlay" style="display: none;">
         <div class="login-box">
             <h3>🔐 Login Administrador</h3>
-            <p style="color: #666; margin-bottom: 20px;">Apenas para administradores</p>
+            <p style="margin-bottom: 20px;">Apenas para administradores</p>
             <input type="text" id="loginUser" placeholder="Usuário">
             <input type="password" id="loginPass" placeholder="Senha">
             <button onclick="fazerLogin()">Entrar como Admin</button>
             <div id="loginError" class="login-error"></div>
-            <button onclick="fecharLogin()" style="background: #6b7280; margin-top: 10px;">🔙 Voltar ao Modo
-                Visitante</button>
-            <small style="display: block; margin-top: 15px; color: #999;">Admin: admin / 123456</small>
+            <button onclick="fecharLogin()" style="background: #6b7280; margin-top: 10px;">🔙 Voltar ao Modo Visitante</button>
+            <small style="display: block; margin-top: 15px;">Admin: admin / 123456</small>
         </div>
     </div>
+
     <div class="container" id="mainContainer" style="display: none;">
-        <!-- Barra superior com botões admin -->
-        <div class="admin-bar">
-        <!-- Botão Dark Mode 
-        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌓 Dark/Light</button>-->
-        <button class="logout-btn" id="themeToggle" onclick="toggleTheme()">🌓 Dark/Light</button>
-        <span id="userTypeBadge" class="admin-badge" style="display: none;">👑 Administrador</span>
-        <button id="logoutBtn" class="logout-btn" onclick="logout()" style="display: none;">🚪 Sair</button>
-    </div>
+        <!-- Botões superiores - lado direito -->
+        <div class="top-buttons">
+            <button id="loginAdminBtn" class="admin-login-btn" onclick="abrirLoginAdmin()">🔑 Admin</button>
+            <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+                <span id="themeIcon">🌙</span>
+                <span id="themeText">Dark</span>
+            </button>
+            <span id="userTypeBadge" class="admin-badge" style="display: none;">👑 Administrador</span>
+            <button id="logoutBtn" class="logout-btn" onclick="logout()" style="display: none;">🚪 Sair</button>
+        </div>
 
         <!-- Header centralizado -->
         <div class="header">
@@ -42,9 +43,10 @@
             <div class="subtitle">Sistema de Solicitação de Serviços</div>
         </div>
 
+        <!-- Abas -->
         <div class="tabs">
-            <button class="tab-btn active" data-tab="form">📝 Nova Solicitação</button>
-            <button class="tab-btn" data-tab="list">📋 Lista de Serviços</button>
+            <button class="tab-btn active" data-tab="form">📅 Agendamento</button>
+            <button class="tab-btn" data-tab="list">📋 Serviços</button>
         </div>
 
         <!-- Aba Formulário -->
@@ -52,8 +54,7 @@
             <form id="form">
                 <div class="form-group">
                     <label>Operador <span class="required">*</span></label>
-                    <input type="text" id="operador" placeholder="Digite o nome do operador" required
-                        autocomplete="off">
+                    <input type="text" id="operador" placeholder="Digite o nome do operador" required autocomplete="off">
                 </div>
                 <div class="form-group">
                     <label>Tipo de Serviço <span class="required">*</span></label>
@@ -73,16 +74,13 @@
                 </div>
                 <div class="form-group">
                     <label>Placa do Veículo <span class="required">*</span></label>
-                    <input type="text" id="placa" placeholder="AAA-1234 ou ABC1D23" required autocomplete="off"
-                        maxlength="8">
-                    <small style="color: #94a3b8; font-size: 12px; margin-top: 5px; display: block;">Formatos: AAA-1234
-                        (antigo) ou ABC1D23 (Mercosul)</small>
+                    <input type="text" id="placa" placeholder="AAA-1234 ou ABC1D23" required autocomplete="off" maxlength="8">
+                    <small style="font-size: 12px; margin-top: 5px; display: block; opacity: 0.7;">Formatos: AAA-1234 (antigo) ou ABC1D23 (Mercosul)</small>
                 </div>
                 <div class="form-group">
                     <label>Cidade <span class="required">*</span></label>
                     <div class="autocomplete-container">
-                        <input type="text" id="cidade" required placeholder="Digite o nome da cidade"
-                            autocomplete="off">
+                        <input type="text" id="cidade" required placeholder="Digite o nome da cidade" autocomplete="off">
                         <div class="suggestions-list" id="suggestionsList"></div>
                         <div class="cities-loading-indicator" id="loadingIndicator" style="display: none;">🔄</div>
                     </div>
@@ -101,8 +99,7 @@
         <div class="tab-content" id="tab-list">
             <div class="servicos-header">
                 <h2>📋 Serviços Registrados</h2>
-                <div class="search-box"><input type="text" id="searchInput" placeholder="🔍 Buscar..."
-                        autocomplete="off"></div>
+                <div class="search-box"><input type="text" id="searchInput" placeholder="🔍 Buscar..." autocomplete="off"></div>
                 <select id="filterStatus" class="filter-status">
                     <option value="">Todos os status</option>
                     <option value="rota">✅ Rota Pré-montada</option>
@@ -122,6 +119,7 @@
             <div class="pagination" id="pagination"></div>
         </div>
     </div>
+
     <script src="/static/js/script.js"></script>
 </body>
 

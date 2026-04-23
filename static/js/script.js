@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const userTypeBadge = document.getElementById("userTypeBadge");
 const logoutBtn = document.getElementById("logoutBtn");
+const loginAdminBtn = document.getElementById("loginAdminBtn");
 
 const form = document.getElementById("form");
 const submitBtn = document.getElementById("submitBtn");
@@ -113,7 +114,7 @@ function renderizarEstatisticas(servicos) {
     const servicosAtivos = servicos.filter(s => s.statusManual !== 'finalizado');
     const cidadesNaoMapeadas = servicosAtivos.filter(s => !obterRotaPorCidade(s.cidade));
     if (cidadesNaoMapeadas.length > 0) {
-        html += `<div class="stat-card"><span class="stat-city">📍Rota em Espera</span><span class="stat-count">${cidadesNaoMapeadas.length} serviços</span></div>`;
+        html += `<div class="stat-card"><span class="stat-city">📍 Rota em Espera</span><span class="stat-count">${cidadesNaoMapeadas.length} serviços</span></div>`;
     }
     
     if (rotasComRota.length === 0 && rotasSemRota.length === 0 && finalizados === 0 && cidadesNaoMapeadas.length === 0) {
@@ -168,7 +169,7 @@ window.fazerLogin = async function () {
             loginOverlay.style.display = "none";
             atualizarInterfaceAdmin();
             carregarServicos();
-            alert("✅ Login realizado com sucesso! Agora você tem permissões de administrador.");
+            alert("✅ Login realizado com sucesso!");
         } else {
             errorSpan.textContent = "❌ Usuário ou senha incorretos";
         }
@@ -196,35 +197,13 @@ window.logout = async function () {
 
 function atualizarInterfaceAdmin() {
     if (isAdmin) {
-        userTypeBadge.style.display = "inline-block";
-        logoutBtn.style.display = "inline-block";
-        const adminBar = document.querySelector('.admin-bar');
-        if (!document.querySelector('.admin-login-btn')) {
-            const loginBtn = document.createElement('button');
-            loginBtn.className = 'logout-btn admin-login-btn';
-            loginBtn.textContent = '👑 Modo Admin Ativo';
-            loginBtn.style.background = '#10b981';
-            loginBtn.style.cursor = 'default';
-            adminBar.insertBefore(loginBtn, adminBar.firstChild);
-        }
+        userTypeBadge.style.display = "inline-flex";
+        logoutBtn.style.display = "inline-flex";
+        if (loginAdminBtn) loginAdminBtn.style.display = "none";
     } else {
         userTypeBadge.style.display = "none";
         logoutBtn.style.display = "none";
-        const adminBtn = document.querySelector('.admin-login-btn');
-        if (adminBtn) adminBtn.remove();
-
-        const adminBar = document.querySelector('.admin-bar');
-        if (!document.querySelector('.fazer-login-btn')) {
-            const loginBtn = document.createElement('button');
-            loginBtn.className = 'logout-btn fazer-login-btn';
-            loginBtn.textContent = '🔐 Login Admin';
-            loginBtn.onclick = () => {
-                const loginOverlay = document.getElementById("loginOverlay");
-                loginOverlay.style.display = "flex";
-            };
-            loginBtn.style.background = '#3e927b';
-            adminBar.insertBefore(loginBtn, adminBar.firstChild);
-        }
+        if (loginAdminBtn) loginAdminBtn.style.display = "inline-flex";
     }
 }
 
@@ -265,7 +244,7 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
 
 // API Calls
 window.finalizarServico = async function (id) {
-    if (!isAdmin) { alert("⚠️ Esta ação requer login de administrador! Clique em 'Login Admin' no topo da página."); return; }
+    if (!isAdmin) { alert("⚠️ Apenas administradores podem finalizar serviços!"); return; }
     if (!confirm("Finalizar este serviço?")) return;
     try {
         const res = await fetch(`/finalizar/${id}`, {
@@ -274,11 +253,11 @@ window.finalizarServico = async function (id) {
         });
         if (res.ok) { alert("✅ Finalizado!"); carregarServicos(); }
         else throw new Error();
-    } catch { alert("❌ Erro!"); }
+    } catch { alert("❌ Erro ao finalizar!"); }
 };
 
 window.reativarServico = async function (id) {
-    if (!isAdmin) { alert("⚠️ Esta ação requer login de administrador! Clique em 'Login Admin' no topo da página."); return; }
+    if (!isAdmin) { alert("⚠️ Apenas administradores podem reativar serviços!"); return; }
     if (!confirm("Reativar este serviço?")) return;
     try {
         const res = await fetch(`/reativar/${id}`, {
@@ -287,11 +266,11 @@ window.reativarServico = async function (id) {
         });
         if (res.ok) { alert("✅ Reativado!"); carregarServicos(); }
         else throw new Error();
-    } catch { alert("❌ Erro!"); }
+    } catch { alert("❌ Erro ao reativar!"); }
 };
 
 window.deletarServico = async function (id) {
-    if (!isAdmin) { alert("⚠️ Esta ação requer login de administrador! Clique em 'Login Admin' no topo da página."); return; }
+    if (!isAdmin) { alert("⚠️ Apenas administradores podem deletar serviços!"); return; }
     if (!confirm("⚠️ Deletar permanentemente? Esta ação não pode ser desfeita!")) return;
     try {
         const res = await fetch(`/deletar/${id}`, {
@@ -300,10 +279,10 @@ window.deletarServico = async function (id) {
         });
         if (res.ok) { alert("🗑️ Deletado!"); carregarServicos(); }
         else throw new Error();
-    } catch { alert("❌ Erro!"); }
+    } catch { alert("❌ Erro ao deletar!"); }
 };
 
-// FUNÇÃO PRINCIPAL DE CARREGAR SERVIÇOS (ATUALIZADA COM ROTAS)
+// FUNÇÃO PRINCIPAL DE CARREGAR SERVIÇOS
 async function carregarServicos() {
     loadingTable.style.display = "block";
     tableContent.innerHTML = "";
@@ -315,7 +294,6 @@ async function carregarServicos() {
         todosServicos = await res.json();
         todosServicos = todosServicos.map(s => ({ ...s, statusManual: s.statusManual || "ativo" }));
         
-        // Usar a nova função de contagem por ROTA
         const rotasCount = calcularStatusPorRota(todosServicos);
         todosServicos = todosServicos.map(s => ({ ...s, ...obterStatusServico(s, rotasCount) }));
         
@@ -345,37 +323,68 @@ function aplicarFiltro() {
 }
 
 function renderizarTabela(servicos) {
-    if (!servicos.length) { tableContent.innerHTML = `<div class="no-data">📭 Nenhum serviço encontrado</div>`; return; }
+    if (!servicos.length) { 
+        tableContent.innerHTML = `<div class="no-data">📭 Nenhum serviço encontrado</div>`; 
+        return; 
+    }
 
-    let html = `<table><thead><tr><th>ID</th><th>Data</th><th>Operador</th><th>Serviço</th><th>Cliente</th><th>Placa</th><th>Cidade</th><th>Status</th><th>Ações</th></tr></thead><tbody>`;
+    let html = `
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>📅 Data</th>
+                    <th>👤 Operador</th>
+                    <th>🔧 Serviço</th>
+                    <th>👥 Cliente</th>
+                    <th>🚗 Placa</th>
+                    <th>📍 Cidade</th>
+                    <th>📊 Status</th>
+                    <th>⚡ Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
 
     for (const s of servicos) {
-        html += `<tr class="${s.status === 'finalizado' ? 'finalizado' : ''}">
-                    <td>${s.id}</td>
-                    <td>${new Date(s.data).toLocaleString('pt-BR')}</td>
-                    <td>${escapeHtml(s.operador)}</td`;
-        html += `<td>${escapeHtml(s.servico)}</td`;
-        html += `<td>${escapeHtml(s.nome)}</td`;
-        html += `<td><strong>${escapeHtml(s.placa)}</strong></td`;
-        html += `<td>${escapeHtml(s.cidade)}</td`;
-        html += `<td><span class="status-badge ${s.classe}">${s.texto}</span></td`;
-        html += `<td>`;
+        const rowClass = s.status === 'finalizado' ? 'finalizado' : '';
+        const dataFormatada = new Date(s.data).toLocaleString('pt-BR');
+        
+        html += `
+            <tr class="${rowClass}">
+                <td style="text-align: center; font-weight: 600;">${s.id}</td>
+                <td style="white-space: nowrap;">${dataFormatada}</td>
+                <td>${escapeHtml(s.operador)}</td>
+                <td>${escapeHtml(s.servico)}</td>
+                <td><strong>${escapeHtml(s.nome)}</strong></td>
+                <td style="font-family: monospace; font-weight: bold; text-align: center;">${escapeHtml(s.placa)}</td>
+                <td>${escapeHtml(s.cidade)}</td>
+                <td><span class="status-badge ${s.classe}">${s.texto}</span></td>
+                <td class="actions-cell">
+        `;
 
         if (isAdmin) {
             if (s.status !== 'finalizado') {
-                html += `<button class="btn-finalizar" onclick="finalizarServico(${s.id})" title="Finalizar">✔️</button>`;
+                html += `<button class="btn-finalizar" onclick="finalizarServico(${s.id})" title="Finalizar">✔️ Finalizar</button>`;
             } else {
-                html += `<button class="btn-reativar" onclick="reativarServico(${s.id})" title="Reativar">🔄</button>`;
+                html += `<button class="btn-reativar" onclick="reativarServico(${s.id})" title="Reativar">🔄 Reativar</button>`;
             }
-            html += `<button class="btn-deletar" onclick="deletarServico(${s.id})" title="Deletar">🗑️</button>`;
+            html += `<button class="btn-deletar" onclick="deletarServico(${s.id})" title="Deletar">🗑️ Deletar</button>`;
         } else {
-            html += `<span style="color:#999; font-size:12px; display:inline-block; padding:5px;">🔒 Login admin necessário</span>`;
+            html += `<span style="color:#999; font-size:11px;">🔒 Login admin</span>`;
         }
 
-        html += `</td></tr>`;
+        html += `
+                </td>
+            </tr>
+        `;
     }
 
-    html += `</tbody></table>`;
+    html += `
+            </tbody>
+        </table>
+    `;
+    
     tableContent.innerHTML = html;
 }
 

@@ -89,7 +89,7 @@ body {
     position: relative;
 }
 
-/* ========== BOTÕES SUPERIORES DIREITO ========== */
+/* ========== BOTÕES SUPERIORES ========== */
 .top-buttons {
     position: absolute;
     top: 20px;
@@ -99,8 +99,7 @@ body {
     z-index: 100;
 }
 
-/* Botão Dark Mode */
-.theme-toggle {
+.theme-toggle, .admin-login-btn {
     background: rgba(255,255,255,0.2);
     border: none;
     border-radius: 30px;
@@ -115,33 +114,11 @@ body {
     backdrop-filter: blur(5px);
 }
 
-.theme-toggle:hover {
+.theme-toggle:hover, .admin-login-btn:hover {
     background: rgba(255,255,255,0.35);
     transform: scale(1.02);
 }
 
-/* Botão Login Admin */
-.admin-login-btn {
-    background: rgba(255,255,255,0.2);
-    border: none;
-    border-radius: 30px;
-    padding: 6px 14px;
-    cursor: pointer;
-    font-size: 13px;
-    color: white;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(5px);
-}
-
-.admin-login-btn:hover {
-    background: rgba(255,255,255,0.35);
-    transform: scale(1.02);
-}
-
-/* Badge de Admin ativo */
 .admin-badge {
     background: #f59e0b;
     color: white;
@@ -153,7 +130,6 @@ body {
     gap: 6px;
 }
 
-/* Botão Logout */
 .logout-btn {
     background: #ef4444;
     padding: 4px 12px;
@@ -172,7 +148,19 @@ body {
     background: #dc2626;
 }
 
-/* Header centralizado */
+/* ========== ÍCONES NOS LABELS ========== */
+.form-group label i {
+    margin-right: 8px;
+    color: var(--text-secondary);
+    width: 20px;
+}
+
+/* ========== ÍCONES NOS BOTÕES ========== */
+button i, .btn-finalizar i, .btn-deletar i, .btn-reativar i {
+    margin-right: 8px;
+}
+
+/* ========== HEADER ========== */
 .header {
     text-align: center;
     margin-bottom: 30px;
@@ -193,7 +181,11 @@ body {
     font-weight: 400;
 }
 
-/* Abas lado a lado - centralizadas */
+.header i {
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+/* ========== ABAS ========== */
 .tabs {
     display: flex;
     gap: 20px;
@@ -244,67 +236,7 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Login Overlay */
-#loginOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
-}
-
-.login-box {
-    background: var(--login-box-bg);
-    padding: 40px;
-    border-radius: 20px;
-    text-align: center;
-    max-width: 350px;
-    width: 90%;
-    transition: background 0.3s ease;
-}
-
-.login-box h3 {
-    margin-bottom: 20px;
-    color: var(--login-box-text);
-}
-
-.login-box input {
-    width: 100%;
-    padding: 12px;
-    margin: 10px 0;
-    border: 1px solid var(--login-input-border);
-    border-radius: 8px;
-    background: var(--login-input-bg);
-    color: var(--login-box-text);
-}
-
-.login-box button {
-    width: 100%;
-    padding: 12px;
-    background: var(--btn-primary);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-.login-box button:hover {
-    background: var(--btn-primary-hover);
-}
-
-.login-error {
-    color: red;
-    margin-top: 10px;
-    font-size: 12px;
-}
-
-/* Formulário */
+/* ========== FORMULÁRIO ========== */
 .form-group {
     position: relative;
     margin-bottom: 20px;
@@ -326,7 +258,7 @@ body {
 .form-group input,
 .form-group select {
     width: 100%;
-    padding: 14px 20px 14px 45px;
+    padding: 14px 20px;
     border: 2px solid var(--input-border);
     border-radius: 12px;
     font-size: 15px;
@@ -334,9 +266,6 @@ body {
     background-color: var(--input-bg);
     color: var(--table-text);
     transition: all 0.3s ease;
-    background-repeat: no-repeat;
-    background-position: 15px center;
-    background-size: 20px;
 }
 
 .form-group input:focus,
@@ -351,38 +280,18 @@ body {
     font-weight: 400;
 }
 
-/* Ícones nos inputs */
-#operador { background-image: url('https://api.iconify.design/lucide:user.svg?color=%2394a3b8'); }
-#cidade { background-image: url('https://api.iconify.design/lucide:map-pin.svg?color=%2394a3b8'); }
-#placa { background-image: url('https://api.iconify.design/lucide:car.svg?color=%2394a3b8'); }
-#servico { background-image: url('https://api.iconify.design/lucide:settings.svg?color=%2394a3b8'); }
-#nome { background-image: url('https://api.iconify.design/lucide:users.svg?color=%2394a3b8'); }
-
-body.dark #operador { background-image: url('https://api.iconify.design/lucide:user.svg?color=%23cbd5e1'); }
-body.dark #cidade { background-image: url('https://api.iconify.design/lucide:map-pin.svg?color=%23cbd5e1'); }
-body.dark #placa { background-image: url('https://api.iconify.design/lucide:car.svg?color=%23cbd5e1'); }
-body.dark #servico { background-image: url('https://api.iconify.design/lucide:settings.svg?color=%23cbd5e1'); }
-body.dark #nome { background-image: url('https://api.iconify.design/lucide:users.svg?color=%23cbd5e1'); }
-
-/* Select personalizado */
-.form-group select {
-    appearance: none;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%233e927b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>'), var(--select-icon);
-    background-repeat: no-repeat, no-repeat;
-    background-position: right 15px center, 15px center;
-    background-size: 16px, 20px;
-    cursor: pointer;
+.form-group small {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    color: var(--text-secondary);
 }
 
-#servico {
-    --select-icon: url('https://api.iconify.design/lucide:settings.svg?color=%2394a3b8');
+.form-group small i {
+    margin-right: 5px;
 }
 
-body.dark #servico {
-    --select-icon: url('https://api.iconify.design/lucide:settings.svg?color=%23cbd5e1');
-}
-
-/* Botão de envio */
+/* ========== BOTÃO DE ENVIO ========== */
 button[type="submit"] {
     width: 100%;
     padding: 16px;
@@ -407,7 +316,7 @@ button[type="submit"]:active {
     transform: translateY(0);
 }
 
-/* Botões da tabela */
+/* ========== BOTÕES DA TABELA ========== */
 .btn-finalizar { background: #10b981; padding: 6px 12px; font-size: 12px; width: auto; margin: 0; border: none; border-radius: 6px; cursor: pointer; color: white; }
 .btn-finalizar:hover { background: #059669; transform: scale(1.02); }
 .btn-deletar { background: #ef4444; padding: 6px 12px; font-size: 12px; width: auto; margin: 0 0 0 5px; border: none; border-radius: 6px; cursor: pointer; color: white; }
@@ -415,7 +324,7 @@ button[type="submit"]:active {
 .btn-reativar { background: #3b82f6; padding: 6px 12px; font-size: 12px; width: auto; margin: 0; border: none; border-radius: 6px; cursor: pointer; color: white; }
 .btn-reativar:hover { background: #2563eb; transform: scale(1.02); }
 
-/* Tabela */
+/* ========== TABELA ========== */
 .servicos-header {
     display: flex;
     justify-content: space-between;
@@ -428,6 +337,11 @@ button[type="submit"]:active {
 .servicos-header h2 {
     color: var(--text-primary);
     font-size: 20px;
+}
+
+.servicos-header h2 i {
+    margin-right: 8px;
+    color: var(--text-secondary);
 }
 
 .refresh-btn {
@@ -502,7 +416,6 @@ td {
     vertical-align: middle;
 }
 
-/* Larguras das colunas */
 th:nth-child(1), td:nth-child(1) { width: 60px; text-align: center; }
 th:nth-child(2), td:nth-child(2) { width: 140px; }
 th:nth-child(3), td:nth-child(3) { width: 120px; }
@@ -546,7 +459,7 @@ tr.finalizado:hover {
     color: var(--table-text);
 }
 
-/* Status badges */
+/* ========== STATUS BADGES ========== */
 .status-badge {
     display: inline-block;
     padding: 4px 10px;
@@ -557,11 +470,15 @@ tr.finalizado:hover {
     white-space: nowrap;
 }
 
+.status-badge i {
+    margin-right: 5px;
+}
+
 .status-rota { background: var(--badge-rota); color: white; }
 .status-espera { background: var(--badge-espera); color: white; }
 .status-finalizado { background: var(--badge-finalizado); color: white; }
 
-/* Estatísticas */
+/* ========== ESTATÍSTICAS ========== */
 .stats-container {
     background: var(--card-bg);
     border-radius: 15px;
@@ -622,7 +539,7 @@ tr.finalizado:hover {
     50% { transform: scale(1.05); }
 }
 
-/* Paginação */
+/* ========== PAGINAÇÃO ========== */
 .pagination {
     display: flex;
     justify-content: center;
@@ -658,28 +575,10 @@ tr.finalizado:hover {
     cursor: not-allowed;
 }
 
-/* Autocomplete */
+/* ========== AUTOCOMPLETE ========== */
 .autocomplete-container {
     position: relative;
     width: 100%;
-}
-
-#cidade {
-    width: 100%;
-    padding: 14px 20px 14px 45px;
-    border: 2px solid var(--input-border);
-    border-radius: 12px;
-    font-size: 15px;
-    background: var(--input-bg);
-    color: var(--table-text);
-    background-image: url('https://api.iconify.design/lucide:map-pin.svg?color=%2394a3b8');
-    background-repeat: no-repeat;
-    background-position: 15px center;
-    background-size: 20px;
-}
-
-body.dark #cidade {
-    background-image: url('https://api.iconify.design/lucide:map-pin.svg?color=%23cbd5e1');
 }
 
 .suggestions-list {
@@ -730,7 +629,7 @@ body.dark #cidade {
     color: var(--btn-primary);
 }
 
-/* Feedback */
+/* ========== FEEDBACK ========== */
 .success, .error, .loading {
     text-align: center;
     padding: 12px;
@@ -739,19 +638,12 @@ body.dark #cidade {
     font-weight: 500;
 }
 
-.success {
-    background: var(--success-bg);
-    color: var(--success-text);
-}
+.success { background: var(--success-bg); color: var(--success-text); }
+.error { background: var(--error-bg); color: var(--error-text); }
+.loading { background: var(--card-bg); color: var(--btn-primary); }
 
-.error {
-    background: var(--error-bg);
-    color: var(--error-text);
-}
-
-.loading {
-    background: var(--card-bg);
-    color: var(--btn-primary);
+.success i, .error i {
+    margin-right: 8px;
 }
 
 .spinner {
@@ -769,98 +661,91 @@ body.dark #cidade {
     100% { transform: rotate(360deg); }
 }
 
-/* Responsivo */
+/* ========== RESPONSIVO ========== */
 @media (max-width: 1000px) {
-    table {
-        font-size: 12px;
-        min-width: 800px;
-    }
-    
-    th, td {
-        padding: 8px 6px;
-    }
-    
-    .status-badge {
-        font-size: 10px;
-        padding: 3px 8px;
-    }
-    
-    .btn-finalizar, .btn-deletar, .btn-reativar {
-        font-size: 10px;
-        padding: 4px 8px;
-    }
+    table { font-size: 12px; min-width: 800px; }
+    th, td { padding: 8px 6px; }
+    .status-badge { font-size: 10px; padding: 3px 8px; }
+    .btn-finalizar, .btn-deletar, .btn-reativar { font-size: 10px; padding: 4px 8px; }
 }
 
 @media (max-width: 768px) {
-    .container {
-        padding: 20px;
-    }
-    
-    .servicos-header {
-        flex-direction: column;
-    }
-    
-    .search-box, .filter-status {
-        max-width: 100%;
-    }
-    
-    .tabs {
-        gap: 12px;
-    }
-    
-    .tab-btn {
-        padding: 8px 20px;
-        font-size: 14px;
-    }
-    
-    .form-group input,
-    .form-group select {
-        padding: 12px 16px 12px 40px;
-        font-size: 14px;
-    }
-    
-    button[type="submit"] {
-        padding: 14px;
-        font-size: 15px;
-    }
-    
-    .top-buttons {
-        top: 15px;
-        right: 20px;
-    }
-    
-    .theme-toggle, .admin-login-btn, .logout-btn, .admin-badge {
-        padding: 4px 10px;
-        font-size: 11px;
-    }
+    .container { padding: 20px; }
+    .servicos-header { flex-direction: column; }
+    .search-box, .filter-status { max-width: 100%; }
+    .tabs { gap: 12px; }
+    .tab-btn { padding: 8px 20px; font-size: 14px; }
+    .form-group input, .form-group select { padding: 12px 16px; font-size: 14px; }
+    button[type="submit"] { padding: 14px; font-size: 15px; }
+    .top-buttons { top: 15px; right: 20px; }
+    .theme-toggle, .admin-login-btn, .logout-btn, .admin-badge { padding: 4px 10px; font-size: 11px; }
 }
 
 @media (max-width: 480px) {
-    .form-group input,
-    .form-group select {
-        padding: 10px 12px 10px 35px;
-        background-size: 16px;
-    }
-    
-    .tab-btn {
-        padding: 6px 15px;
-        font-size: 12px;
-    }
-    
-    .header h1 {
-        font-size: 24px;
-    }
-    
-    .top-buttons {
-        gap: 6px;
-    }
+    .tab-btn { padding: 6px 15px; font-size: 12px; }
+    .header h1 { font-size: 24px; }
+    .top-buttons { gap: 6px; }
 }
 
-::placeholder {
-    color: #94a3b8;
+::placeholder { color: #94a3b8; }
+#placa { text-transform: uppercase; letter-spacing: 1px; }
+
+/* ========== LOGIN OVERLAY ========== */
+#loginOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
 }
 
-#placa {
-    text-transform: uppercase;
-    letter-spacing: 1px;
+.login-box {
+    background: var(--login-box-bg);
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    max-width: 350px;
+    width: 90%;
+    transition: background 0.3s ease;
+}
+
+.login-box h3 {
+    margin-bottom: 20px;
+    color: var(--login-box-text);
+}
+
+.login-box input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid var(--login-input-border);
+    border-radius: 8px;
+    background: var(--login-input-bg);
+    color: var(--login-box-text);
+}
+
+.login-box button {
+    width: 100%;
+    padding: 12px;
+    background: var(--btn-primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.login-box button:hover {
+    background: var(--btn-primary-hover);
+}
+
+.login-error {
+    color: red;
+    margin-top: 10px;
+    font-size: 12px;
 }

@@ -5,8 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Elite Log - Sistema de Solicitação de Serviços</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome 6 (ícones profissionais) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 
@@ -14,50 +15,52 @@
     <!-- Login Overlay -->
     <div id="loginOverlay" style="display: none;">
         <div class="login-box">
-            <h3>🔐 Login Administrador</h3>
+            <i class="fas fa-lock" style="font-size: 48px; color: #3e927b; margin-bottom: 15px;"></i>
+            <h3>Login Administrador</h3>
             <p style="margin-bottom: 20px;">Apenas para administradores</p>
             <input type="text" id="loginUser" placeholder="Usuário">
             <input type="password" id="loginPass" placeholder="Senha">
-            <button onclick="fazerLogin()">Entrar como Admin</button>
+            <button onclick="fazerLogin()"><i class="fas fa-sign-in-alt"></i> Entrar como Admin</button>
             <div id="loginError" class="login-error"></div>
-            <button onclick="fecharLogin()" style="background: #6b7280; margin-top: 10px;">🔙 Voltar ao Modo Visitante</button>
+            <button onclick="fecharLogin()" style="background: #6b7280; margin-top: 10px;"><i class="fas fa-arrow-left"></i> Voltar ao Modo Visitante</button>
             <small style="display: block; margin-top: 15px;">Admin: admin / 123456</small>
         </div>
     </div>
 
     <div class="container" id="mainContainer" style="display: none;">
-        <!-- Botões superiores - lado direito -->
+        <!-- Botões superiores -->
         <div class="top-buttons">
-            <button id="loginAdminBtn" class="admin-login-btn" onclick="abrirLoginAdmin()">🔑 Admin</button>
+            <button id="loginAdminBtn" class="admin-login-btn" onclick="abrirLoginAdmin()"><i class="fas fa-user-shield"></i> Admin</button>
             <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
-                <span id="themeIcon">🌙</span>
+                <i class="fas fa-moon" id="themeIcon"></i>
                 <span id="themeText">Dark</span>
             </button>
-            <span id="userTypeBadge" class="admin-badge" style="display: none;">👑 Administrador</span>
-            <button id="logoutBtn" class="logout-btn" onclick="logout()" style="display: none;">🚪 Sair</button>
+            <span id="userTypeBadge" class="admin-badge" style="display: none;"><i class="fas fa-crown"></i> Administrador</span>
+            <button id="logoutBtn" class="logout-btn" onclick="logout()" style="display: none;"><i class="fas fa-sign-out-alt"></i> Sair</button>
         </div>
 
         <!-- Header centralizado -->
         <div class="header">
+            <i class="fas fa-truck-fast" style="font-size: 48px; color: #14b8a6; margin-bottom: 10px;"></i>
             <h1>ELITE LOG</h1>
             <div class="subtitle">Sistema de Solicitação de Serviços</div>
         </div>
 
         <!-- Abas -->
         <div class="tabs">
-            <button class="tab-btn active" data-tab="form">📅 Agendamento</button>
-            <button class="tab-btn" data-tab="list">📋 Serviços</button>
+            <button class="tab-btn active" data-tab="form"><i class="fas fa-calendar-alt"></i> Agendamento</button>
+            <button class="tab-btn" data-tab="list"><i class="fas fa-list"></i> Serviços</button>
         </div>
 
         <!-- Aba Formulário -->
         <div class="tab-content active" id="tab-form">
             <form id="form">
                 <div class="form-group">
-                    <label>Operador <span class="required">*</span></label>
+                    <label><i class="fas fa-user"></i> Operador <span class="required">*</span></label>
                     <input type="text" id="operador" placeholder="Digite o nome do operador" required autocomplete="off">
                 </div>
                 <div class="form-group">
-                    <label>Tipo de Serviço <span class="required">*</span></label>
+                    <label><i class="fas fa-wrench"></i> Tipo de Serviço <span class="required">*</span></label>
                     <select id="servico" required>
                         <option value="">Selecione o tipo de serviço</option>
                         <option>Manutenção</option>
@@ -69,50 +72,52 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Nome do Cliente <span class="required">*</span></label>
+                    <label><i class="fas fa-user-circle"></i> Nome do Cliente <span class="required">*</span></label>
                     <input type="text" id="nome" placeholder="Nome completo do cliente" required autocomplete="off">
                 </div>
                 <div class="form-group">
-                    <label>Placa do Veículo <span class="required">*</span></label>
+                    <label><i class="fas fa-car"></i> Placa do Veículo <span class="required">*</span></label>
                     <input type="text" id="placa" placeholder="AAA-1234 ou ABC1D23" required autocomplete="off" maxlength="8">
-                    <small style="font-size: 12px; margin-top: 5px; display: block; opacity: 0.7;">Formatos: AAA-1234 (antigo) ou ABC1D23 (Mercosul)</small>
+                    <small><i class="fas fa-info-circle"></i> Formatos: AAA-1234 (antigo) ou ABC1D23 (Mercosul)</small>
                 </div>
                 <div class="form-group">
-                    <label>Cidade <span class="required">*</span></label>
+                    <label><i class="fas fa-map-marker-alt"></i> Cidade <span class="required">*</span></label>
                     <div class="autocomplete-container">
                         <input type="text" id="cidade" required placeholder="Digite o nome da cidade" autocomplete="off">
                         <div class="suggestions-list" id="suggestionsList"></div>
-                        <div class="cities-loading-indicator" id="loadingIndicator" style="display: none;">🔄</div>
+                        <div class="cities-loading-indicator" id="loadingIndicator" style="display: none;"><i class="fas fa-spinner fa-pulse"></i></div>
                     </div>
                 </div>
-                <button type="submit" id="submitBtn">📤 Enviar Solicitação</button>
+                <button type="submit" id="submitBtn"><i class="fas fa-paper-plane"></i> Enviar Solicitação</button>
                 <div class="loading" id="loading" style="display: none;">
                     <div class="spinner"></div>
-                    <p>Enviando...</p>
+                    <p><i class="fas fa-spinner fa-pulse"></i> Enviando...</p>
                 </div>
-                <div class="success" id="msg" style="display: none;">✅ Solicitação enviada com sucesso!</div>
-                <div class="error" id="errorMsg" style="display: none;">❌ Erro ao enviar. Tente novamente.</div>
+                <div class="success" id="msg" style="display: none;"><i class="fas fa-check-circle"></i> Solicitação enviada com sucesso!</div>
+                <div class="error" id="errorMsg" style="display: none;"><i class="fas fa-exclamation-triangle"></i> Erro ao enviar. Tente novamente.</div>
             </form>
         </div>
 
         <!-- Aba Lista -->
         <div class="tab-content" id="tab-list">
             <div class="servicos-header">
-                <h2>📋 Serviços Registrados</h2>
-                <div class="search-box"><input type="text" id="searchInput" placeholder="🔍 Buscar..." autocomplete="off"></div>
+                <h2><i class="fas fa-clipboard-list"></i> Serviços Registrados</h2>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Buscar..." autocomplete="off">
+                </div>
                 <select id="filterStatus" class="filter-status">
                     <option value="">Todos os status</option>
-                    <option value="rota">✅ Rota Pré-montada</option>
-                    <option value="espera">⏳ Em espera</option>
-                    <option value="finalizado">✔️ Finalizado</option>
+                    <option value="rota"><i class="fas fa-check-circle"></i> Rota Pré-montada</option>
+                    <option value="espera"><i class="fas fa-clock"></i> Em espera</option>
+                    <option value="finalizado"><i class="fas fa-flag-checkered"></i> Finalizado</option>
                 </select>
-                <button class="refresh-btn" id="refreshBtn">🔄 Atualizar</button>
+                <button class="refresh-btn" id="refreshBtn"><i class="fas fa-sync-alt"></i> Atualizar</button>
             </div>
             <div class="stats-container" id="statsContainer"></div>
             <div class="table-container">
                 <div id="loadingTable" style="display: none; text-align: center; padding: 40px;">
                     <div class="spinner"></div>
-                    <p>Carregando...</p>
+                    <p><i class="fas fa-spinner fa-pulse"></i> Carregando...</p>
                 </div>
                 <div id="tableContent"></div>
             </div>

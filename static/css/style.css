@@ -538,7 +538,36 @@ tr.finalizado:hover {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.05); }
 }
+/* Correção do alinhamento */
+.stat-card {
+    gap: 10px;
+}
 
+.stat-city {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.stat-count {
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+}
+
+.stat-count span {
+    display: inline;
+    font-size: inherit;
+}
+
+/* Ajuste para o ícone dentro do contador */
+.stat-count i {
+    margin-right: 3px;
+    font-size: 11px;
+}
 /* ========== PAGINAÇÃO ========== */
 .pagination {
     display: flex;

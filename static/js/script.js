@@ -75,7 +75,7 @@ function calcularStatusPorRota(servicos) {
 
 function obterStatusServico(servico, rotasCount) {
     if (servico.statusManual === 'finalizado') {
-        return { status: "finalizado", texto: "✔️ Finalizado", classe: "status-finalizado" };
+        return { status: "finalizado", texto: '<i class="fa-solid fa-circle-check"></i> Finalizado', classe: "status-finalizado" };
     }
     
     const rota = obterRotaPorCidade(servico.cidade);
@@ -83,14 +83,14 @@ function obterStatusServico(servico, rotasCount) {
     if (rota) {
         const quantidade = rotasCount[rota] || 0;
         if (quantidade >= 4) {
-            return { status: "rota", texto: "✅ Rota Pré-montada", classe: "status-rota" };
+           return { status: "rota", texto: '<i class="fa-solid fa-route"></i> Rota Pré-montada', classe: "status-rota" };
         } else {
             const faltam = 4 - quantidade;
-            return { status: "espera", texto: `⏳ Aguardando +${faltam} na rota`, classe: "status-espera" };
+            return { status: "espera", texto: `<i class="fa-solid fa-hourglass-half"></i> Aguardando +${faltam} na rota`, classe: "status-espera" };
         }
     }
     
-    return { status: "individual", texto: "📍 Rota em Espera", classe: "status-espera" };
+    return { status: "individual", texto: '<i class="fa-solid fa-location-dot"></i> Rota em Espera', classe: "status-espera" };
 }
 
 function renderizarEstatisticas(servicos) {
@@ -100,29 +100,70 @@ function renderizarEstatisticas(servicos) {
     const rotasComRota = Object.entries(rotasCount).filter(([_, count]) => count >= 4);
     const rotasSemRota = Object.entries(rotasCount).filter(([_, count]) => count < 4);
     
-    let html = `<div class="stats-title">📊 Status das Rotas Agrupadas <small>(Mínimo 4 serviços por rota)</small></div><div class="stats-grid">`;
-    
-    rotasComRota.forEach(([rota, q]) => {
-        html += `<div class="stat-card"><span class="stat-city">✅ ${rota}</span><span class="stat-count highlight">${q} serviços</span></div>`;
-    });
-    
-    rotasSemRota.forEach(([rota, q]) => {
-        const faltam = 4 - q;
-        html += `<div class="stat-card"><span class="stat-city">⏳ ${rota}</span><span class="stat-count">${q} serviços (faltam ${faltam})</span></div>`;
-    });
-    
     const servicosAtivos = servicos.filter(s => s.statusManual !== 'finalizado');
     const cidadesNaoMapeadas = servicosAtivos.filter(s => !obterRotaPorCidade(s.cidade));
+    
+    let html = `
+        <div class="stats-title">
+            <i class="fa-solid fa-chart-pie"></i> Status das Rotas Agrupadas
+            <small>(Mínimo 4 serviços por rota)</small>
+        </div>
+        <div class="stats-grid">
+    `;
+    
+    // Função auxiliar para plural
+    const plural = (n, singular, plural) => n === 1 ? singular : plural;
+    
+    // Rotas com rota pronta
+    rotasComRota.forEach(([rota, q]) => {
+        html += `
+            <div class="stat-card">
+                <span class="stat-city"><i class="fa-solid fa-circle-check"></i> ${rota}</span>
+                <span class="stat-count highlight">${q} ${plural(q, 'serviço', 'serviços')}</span>
+            </div>
+        `;
+    });
+    
+    // Rotas em espera
+    rotasSemRota.forEach(([rota, q]) => {
+        const faltam = 4 - q;
+        html += `
+            <div class="stat-card">
+                <span class="stat-city"><i class="fa-solid fa-hourglass-half"></i> ${rota}</span>
+                <span class="stat-count">${q} ${plural(q, 'serviço', 'serviços')} (${plural(faltam, 'falta', 'faltam')} ${faltam})</span>
+            </div>
+        `;
+    });
+    
+    // Cidades não mapeadas
     if (cidadesNaoMapeadas.length > 0) {
-        html += `<div class="stat-card"><span class="stat-city">📍 Rota em Espera</span><span class="stat-count">${cidadesNaoMapeadas.length} serviços</span></div>`;
+        const qtd = cidadesNaoMapeadas.length;
+        html += `
+            <div class="stat-card">
+                <span class="stat-city"><i class="fa-solid fa-location-dot"></i> Rota em Espera</span>
+                <span class="stat-count">${qtd} ${plural(qtd, 'serviço', 'serviços')}</span>
+            </div>
+        `;
     }
     
+    // Nenhum serviço ativo
     if (rotasComRota.length === 0 && rotasSemRota.length === 0 && finalizados === 0 && cidadesNaoMapeadas.length === 0) {
-        html += '<div class="stat-card"><span class="stat-city">Nenhum serviço ativo</span></div>';
+        html += `
+            <div class="stat-card">
+                <span class="stat-city"><i class="fa-solid fa-info-circle"></i> Nenhum serviço ativo</span>
+                <span class="stat-count">0 serviços</span>
+            </div>
+        `;
     }
     
+    // Serviços finalizados
     if (finalizados > 0) {
-        html += `<div class="stat-card"><span class="stat-city">✔️ Finalizados</span><span class="stat-count">${finalizados} serviços</span></div>`;
+        html += `
+            <div class="stat-card">
+                <span class="stat-city"><i class="fa-solid fa-flag-checkered"></i> Finalizados</span>
+                <span class="stat-count">${finalizados} ${plural(finalizados, 'serviço', 'serviços')}</span>
+            </div>
+        `;
     }
     
     statsContainer.innerHTML = html + `</div>`;
@@ -169,9 +210,9 @@ window.fazerLogin = async function () {
             loginOverlay.style.display = "none";
             atualizarInterfaceAdmin();
             carregarServicos();
-            alert("✅ Login realizado com sucesso!");
+            alert("Login realizado com sucesso!");
         } else {
-            errorSpan.textContent = "❌ Usuário ou senha incorretos";
+            errorSpan.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Usuário ou senha incorretos';
         }
     } catch (err) {
         console.error("Erro no login:", err);
@@ -328,23 +369,23 @@ function renderizarTabela(servicos) {
         return; 
     }
 
-    let html = `
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>📅 Data</th>
-                    <th>👤 Operador</th>
-                    <th>🔧 Serviço</th>
-                    <th>👥 Cliente</th>
-                    <th>🚗 Placa</th>
-                    <th>📍 Cidade</th>
-                    <th>📊 Status</th>
-                    <th>⚡ Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-    `;
+ let html = `
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th><i class="fa-solid fa-calendar-days"></i> Data</th>
+                <th><i class="fa-solid fa-user"></i> Operador</th>
+                <th><i class="fa-solid fa-screwdriver-wrench"></i> Serviço</th>
+                <th><i class="fa-solid fa-users"></i> Cliente</th>
+                <th><i class="fa-solid fa-car"></i> Placa</th>
+                <th><i class="fa-solid fa-location-dot"></i> Cidade</th>
+                <th><i class="fa-solid fa-chart-simple"></i> Status</th>
+                <th><i class="fa-solid fa-bolt"></i> Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+`;
 
     for (const s of servicos) {
         const rowClass = s.status === 'finalizado' ? 'finalizado' : '';
@@ -364,15 +405,28 @@ function renderizarTabela(servicos) {
         `;
 
         if (isAdmin) {
-            if (s.status !== 'finalizado') {
-                html += `<button class="btn-finalizar" onclick="finalizarServico(${s.id})" title="Finalizar">✔️ Finalizar</button>`;
-            } else {
-                html += `<button class="btn-reativar" onclick="reativarServico(${s.id})" title="Reativar">🔄 Reativar</button>`;
-            }
-            html += `<button class="btn-deletar" onclick="deletarServico(${s.id})" title="Deletar">🗑️ Deletar</button>`;
-        } else {
-            html += `<span style="color:#999; font-size:11px;">🔒 Login admin</span>`;
-        }
+    if (s.status !== 'finalizado') {
+        html += `
+        <button class="btn-finalizar" onclick="finalizarServico(${s.id})" title="Finalizar">
+            <i class="fa-solid fa-check"></i> Finalizar
+        </button>`;
+    } else {
+        html += `
+        <button class="btn-reativar" onclick="reativarServico(${s.id})" title="Reativar">
+            <i class="fa-solid fa-rotate"></i> Reativar
+        </button>`;
+    }
+
+    html += `
+    <button class="btn-deletar" onclick="deletarServico(${s.id})" title="Deletar">
+        <i class="fa-solid fa-trash"></i> Deletar
+    </button>`;
+} else {
+    html += `
+    <span style="color:#999; font-size:11px;">
+        <i class="fa-solid fa-lock"></i> Login admin
+    </span>`;
+}
 
         html += `
                 </td>

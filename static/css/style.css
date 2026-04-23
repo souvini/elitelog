@@ -749,3 +749,17 @@ tr.finalizado:hover {
     margin-top: 10px;
     font-size: 12px;
 }
+.theme-toggle i {
+    font-size: 14px;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.theme-toggle i.fa-sun {
+    color: #faf9f8;
+    text-shadow: 0 0 4px rgba(245, 244, 243, 0.5);
+}
+
+.theme-toggle i.fa-moon {
+    color: #cbd5e1;
+    text-shadow: 0 0 4px rgba(203, 213, 225, 0.5);
+}

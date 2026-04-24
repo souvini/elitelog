@@ -189,7 +189,7 @@ window.fazerLogin = async function () {
     const errorSpan = document.getElementById("loginError");
 
     if (!usuario || !senha) {
-        errorSpan.textContent = "❌ Preencha usuário e senha";
+        errorSpan.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Preencha usuário e senha';
         return;
     }
 
@@ -216,12 +216,12 @@ window.fazerLogin = async function () {
         }
     } catch (err) {
         console.error("Erro no login:", err);
-        errorSpan.textContent = "❌ Erro de conexão com o servidor";
+        errorSpan.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Erro de conexão com o servidor';
     }
 };
 
 window.logout = async function () {
-    if (confirm("Deseja sair do modo administrador?")) {
+    if (confirm('<i class="fa-solid fa-question-circle"></i> Deseja sair do modo administrador?')) {
         try {
             await fetch(`/logout`, {
                 method: "POST",
@@ -232,7 +232,7 @@ window.logout = async function () {
         isAdmin = false;
         atualizarInterfaceAdmin();
         carregarServicos();
-        alert("👋 Você voltou ao modo visitante");
+        alert('<i class="fa-solid fa-arrow-right-from-bracket"></i> Você voltou ao modo visitante');
     }
 };
 
@@ -284,45 +284,97 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
 });
 
 // API Calls
+// Função customizada de alerta
+function showCustomAlert(message, type = 'info') {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `custom-alert ${type}`;
+    alertDiv.innerHTML = message;
+    alertDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+        color: white;
+        border-radius: 10px;
+        font-size: 14px;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        animation: slideInRight 0.3s ease;
+    `;
+    document.body.appendChild(alertDiv);
+    setTimeout(() => {
+        alertDiv.style.animation = 'slideOutRight 0.3s ease';
+        setTimeout(() => alertDiv.remove(), 300);
+    }, 3000);
+}
+
+// Versão com alert customizado
 window.finalizarServico = async function (id) {
-    if (!isAdmin) { alert("⚠️ Apenas administradores podem finalizar serviços!"); return; }
-    if (!confirm("Finalizar este serviço?")) return;
+    if (!isAdmin) { 
+        showCustomAlert('<i class="fa-solid fa-lock"></i> Apenas administradores podem finalizar serviços!', 'error');
+        return; 
+    }
+    if (!confirm('<i class="fa-solid fa-question-circle"></i> Finalizar este serviço?')) return;
     try {
         const res = await fetch(`/finalizar/${id}`, {
             method: "PUT",
             credentials: 'include'
         });
-        if (res.ok) { alert("✅ Finalizado!"); carregarServicos(); }
+        if (res.ok) { 
+            showCustomAlert('<i class="fa-solid fa-check-circle"></i> Serviço finalizado com sucesso!', 'success');
+            carregarServicos(); 
+        }
         else throw new Error();
-    } catch { alert("❌ Erro ao finalizar!"); }
+    } catch { 
+        showCustomAlert('<i class="fa-solid fa-circle-exclamation"></i> Erro ao finalizar o serviço!', 'error');
+    }
 };
-
 window.reativarServico = async function (id) {
-    if (!isAdmin) { alert("⚠️ Apenas administradores podem reativar serviços!"); return; }
-    if (!confirm("Reativar este serviço?")) return;
+    if (!isAdmin) { 
+        alert('<i class="fa-solid fa-lock"></i> Apenas administradores podem reativar serviços!'); 
+        return; 
+    }
+    if (!confirm('<i class="fa-solid fa-question-circle"></i> Reativar este serviço?')) return;
     try {
         const res = await fetch(`/reativar/${id}`, {
             method: "PUT",
             credentials: 'include'
         });
-        if (res.ok) { alert("✅ Reativado!"); carregarServicos(); }
-        else throw new Error();
-    } catch { alert("❌ Erro ao reativar!"); }
+        if (res.ok) { 
+            alert('<i class="fa-solid fa-check-circle"></i> Reativado!'); 
+            carregarServicos(); 
+        } else {
+            throw new Error();
+        }
+    } catch { 
+        alert('<i class="fa-solid fa-circle-exclamation"></i> Erro ao reativar!'); 
+    }
 };
-
 window.deletarServico = async function (id) {
-    if (!isAdmin) { alert("⚠️ Apenas administradores podem deletar serviços!"); return; }
-    if (!confirm("⚠️ Deletar permanentemente? Esta ação não pode ser desfeita!")) return;
+    if (!isAdmin) { 
+        alert('<i class="fa-solid fa-lock"></i> Apenas administradores podem deletar serviços!'); 
+        return; 
+    }
+    if (!confirm('<i class="fa-solid fa-triangle-exclamation"></i> Deletar permanentemente? Esta ação não pode ser desfeita!')) return;
     try {
         const res = await fetch(`/deletar/${id}`, {
             method: "DELETE",
             credentials: 'include'
         });
-        if (res.ok) { alert("🗑️ Deletado!"); carregarServicos(); }
-        else throw new Error();
-    } catch { alert("❌ Erro ao deletar!"); }
+        if (res.ok) { 
+            alert('<i class="fa-solid fa-trash-can"></i> Deletado!'); 
+            carregarServicos(); 
+        } else {
+            throw new Error();
+        }
+    } catch { 
+        alert('<i class="fa-solid fa-circle-exclamation"></i> Erro ao deletar!'); 
+    }
 };
-
 // FUNÇÃO PRINCIPAL DE CARREGAR SERVIÇOS
 async function carregarServicos() {
     loadingTable.style.display = "block";
@@ -342,7 +394,7 @@ async function carregarServicos() {
         aplicarFiltro();
     } catch (err) {
         console.error(err);
-        tableContent.innerHTML = `<div class="no-data">❌ Erro ao carregar serviços. Verifique se o servidor está online.</div>`;
+        tableContent.innerHTML = `<div class="no-data"><i class="fa-solid fa-circle-exclamation"></i> Erro ao carregar serviços. Verifique se o servidor está online.</div>`;
     } finally { loadingTable.style.display = "none"; }
 }
 
@@ -365,9 +417,9 @@ function aplicarFiltro() {
 
 function renderizarTabela(servicos) {
     if (!servicos.length) { 
-        tableContent.innerHTML = `<div class="no-data">📭 Nenhum serviço encontrado</div>`; 
-        return; 
-    }
+    tableContent.innerHTML = `<div class="no-data"><i class="fa-solid fa-folder-open"></i> Nenhum serviço encontrado</div>`; 
+    return; 
+}
 
  let html = `
     <table>
@@ -466,7 +518,7 @@ async function carregarCidades() {
         cidadeInput.disabled = false;
         cidadeInput.placeholder = "Digite o nome da cidade";
     } catch (err) {
-        showErrorMsg("❌ Erro ao carregar cidades.");
+        showErrorMsg('<i class="fa-solid fa-circle-exclamation"></i> Erro ao carregar cidades.');
         cidadeInput.placeholder = "Erro ao carregar";
     } finally { loadingIndicator.style.display = "none"; }
 }
@@ -535,13 +587,13 @@ form.addEventListener("submit", async e => {
     };
 
     if (!dados.operador || !dados.servico || !dados.nome || !dados.placa || !dados.cidade) {
-        return showErrorMsg("❌ Preencha todos os campos!");
+        return showErrorMsg('<i class="fa-solid fa-circle-exclamation"></i> Preencha todos os campos!');
     }
     if (cidades.length > 0 && !cidades.includes(dados.cidade)) {
-        return showErrorMsg("❌ Cidade inválida! Selecione da lista.");
+        return showErrorMsg('<i class="fa-solid fa-circle-exclamation"></i> Cidade inválida! Selecione da lista.');
     }
     if (!validarPlaca(dados.placa)) {
-        return showErrorMsg("❌ Placa inválida! Use AAA-1234 ou ABC1D23");
+        return showErrorMsg('<i class="fa-solid fa-circle-exclamation"></i> Placa inválida! Use AAA-1234 ou ABC1D23');
     }
 
     submitBtn.disabled = true;
@@ -560,7 +612,7 @@ form.addEventListener("submit", async e => {
             if (document.getElementById("tab-list").classList.contains("active")) carregarServicos();
         } else throw new Error();
     } catch (err) {
-        showErrorMsg("❌ Erro de conexão com o servidor!");
+        showErrorMsg('<i class="fa-solid fa-circle-exclamation"></i> Erro de conexão com o servidor!');
     } finally {
         loadingDiv.style.display = "none";
         submitBtn.disabled = false;

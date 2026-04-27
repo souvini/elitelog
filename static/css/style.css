@@ -482,7 +482,7 @@ tr.finalizado:hover {
 .stats-container {
     background: var(--card-bg);
     border-radius: 15px;
-    padding: 15px;
+    padding: 16px;
     margin-bottom: 20px;
     transition: background 0.3s ease;
 }
@@ -490,43 +490,65 @@ tr.finalizado:hover {
 .stats-title {
     color: var(--stat-text);
     font-size: 14px;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     font-weight: 500;
     text-align: center;
 }
 
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
 }
 
+/* CARD */
 .stat-card {
     background: var(--stat-card-bg);
-    border-radius: 10px;
-    padding: 10px;
+    border-radius: 12px;
+    padding: 12px 14px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    transition: background 0.3s ease;
+    justify-content: space-between;
+    gap: 10px;
+    transition: all 0.2s ease;
+    overflow: hidden;
 }
 
 .stat-card:hover {
     background: rgba(45,212,191,0.2);
+    transform: translateY(-2px);
 }
 
+/* CIDADE */
 .stat-city {
     color: var(--stat-text);
     font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    /* evita quebrar layout */
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
+/* CONTADOR */
 .stat-count {
     background: var(--btn-primary);
     color: white;
-    padding: 2px 8px;
+    padding: 4px 10px;
     border-radius: 20px;
     font-size: 12px;
     font-weight: bold;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
 .stat-count.highlight {
@@ -534,39 +556,15 @@ tr.finalizado:hover {
     animation: pulse 1s infinite;
 }
 
+/* ÍCONE */
+.stat-count i {
+    font-size: 11px;
+}
+
+/* ANIMAÇÃO */
 @keyframes pulse {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.05); }
-}
-/* Correção do alinhamento */
-.stat-card {
-    gap: 10px;
-}
-
-.stat-city {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
-}
-
-.stat-count {
-    white-space: nowrap;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    flex-shrink: 0;
-}
-
-.stat-count span {
-    display: inline;
-    font-size: inherit;
-}
-
-/* Ajuste para o ícone dentro do contador */
-.stat-count i {
-    margin-right: 3px;
-    font-size: 11px;
 }
 /* ========== PAGINAÇÃO ========== */
 .pagination {

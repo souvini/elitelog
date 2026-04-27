@@ -225,6 +225,22 @@ window.abrirLoginAdmin = function () {
 window.fecharLogin = function () {
     const overlay = document.getElementById("loginOverlay");
     if (overlay) overlay.style.display = "none";
+    
+    // Limpar campos e erros ao fechar
+    const loginUser = document.getElementById("loginUser");
+    const loginPass = document.getElementById("loginPass");
+    const loginError = document.getElementById("loginError");
+    
+    if (loginUser) loginUser.value = "";
+    if (loginPass) loginPass.value = "";
+    if (loginError) loginError.innerHTML = "";
+    
+    // Reset do tipo do campo de senha
+    if (loginPass) loginPass.setAttribute("type", "password");
+    
+    // Reset do ícone do olho
+    const toggleIcon = document.getElementById("togglePassword");
+    if (toggleIcon) toggleIcon.className = "fa-regular fa-eye";
 };
 
 // LOGIN
@@ -744,3 +760,26 @@ function escapeHtml(t) { if (!t) return ''; return t.replace(/[&<>]/g, function 
 searchInput.addEventListener('input', () => { currentPage = 1; aplicarFiltro(); });
 filterStatus.addEventListener('change', () => { currentPage = 1; aplicarFiltro(); });
 refreshBtn.addEventListener('click', carregarServicos);
+// ========== FECHAR MODAL AO CLICAR FORA ==========
+document.addEventListener("DOMContentLoaded", function() {
+    const loginOverlay = document.getElementById("loginOverlay");
+    
+    if (loginOverlay) {
+        // Fecha ao clicar no fundo escuro (overlay)
+        loginOverlay.addEventListener("click", function(e) {
+            if (e.target === loginOverlay) {
+                fecharLogin();
+            }
+        });
+    }
+    
+    // Fecha ao pressionar a tecla ESC
+    document.addEventListener("keydown", function(e) {
+        if (e.key === "Escape") {
+            const overlay = document.getElementById("loginOverlay");
+            if (overlay && overlay.style.display === "flex") {
+                fecharLogin();
+            }
+        }
+    });
+});

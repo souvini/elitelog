@@ -720,73 +720,221 @@ tr.finalizado:hover {
 /* ========== LOGIN OVERLAY ========== */
 #loginOverlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.8);
-    display: flex;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    display: none; /* Importante: começa escondido */
     justify-content: center;
     align-items: center;
     z-index: 2000;
 }
 
+/* CAIXA DE LOGIN */
 .login-box {
     background: var(--login-box-bg);
-    padding: 40px;
+    padding: 35px 30px;
     border-radius: 20px;
     text-align: center;
-    max-width: 350px;
+    max-width: 360px;
     width: 90%;
-    transition: background 0.3s ease;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+    animation: fadeInScale 0.3s ease;
 }
 
-.login-box h3 {
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ÍCONE DO LOGIN */
+.login-icon {
+    font-size: 48px;
+    color: #3e927b;
+    margin-bottom: 15px;
+}
+
+/* SUBTÍTULO */
+.login-subtitle {
     margin-bottom: 20px;
-    color: var(--login-box-text);
+    color: #666;
+    font-size: 14px;
 }
 
+/* TÍTULO */
+.login-box h3 {
+    margin-bottom: 15px;
+    color: var(--login-box-text);
+    font-size: 22px;
+}
+
+/* INPUTS */
 .login-box input {
     width: 100%;
     padding: 12px;
-    margin: 10px 0;
+    margin: 8px 0;
     border: 1px solid var(--login-input-border);
-    border-radius: 8px;
+    border-radius: 10px;
     background: var(--login-input-bg);
     color: var(--login-box-text);
+    transition: 0.2s;
+    font-size: 14px;
 }
 
+.login-box input:focus {
+    outline: none;
+    border-color: #3e927b;
+    box-shadow: 0 0 0 2px rgba(62,146,123,0.2);
+}
+
+/* BOTÕES */
 .login-box button {
     width: 100%;
     padding: 12px;
     background: var(--btn-primary);
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
     margin-top: 10px;
+    font-weight: 500;
+    transition: 0.2s;
+    font-size: 14px;
 }
 
 .login-box button:hover {
     background: var(--btn-primary-hover);
+    transform: translateY(-1px);
 }
 
-.login-error {
-    color: red;
-    margin-top: 10px;
-    font-size: 12px;
+/* BOTÃO SECUNDÁRIO */
+.login-box .btn-secondary {
+    background: #6b7280;
 }
+
+.login-box .btn-secondary:hover {
+    background: #4b5563;
+}
+
+/* ERRO */
+.login-error {
+    color: #ef4444;
+    margin-top: 10px;
+    font-size: 13px;
+}
+
+.login-error i {
+    margin-right: 5px;
+}
+
+/* HINT */
+.login-hint {
+    display: block;
+    margin-top: 15px;
+    font-size: 12px;
+    color: #999;
+}
+
+/* ========== CAMPO SENHA COM ÍCONE ========== */
+.input-password {
+    position: relative;
+    width: 100%;
+    margin: 8px 0;
+}
+
+.input-password input {
+    width: 100%;
+    padding: 12px;
+    padding-right: 40px;
+    border: 1px solid var(--login-input-border);
+    border-radius: 10px;
+    background: var(--login-input-bg);
+    color: var(--login-box-text);
+    font-size: 14px;
+}
+
+.input-password input:focus {
+    outline: none;
+    border-color: #3e927b;
+    box-shadow: 0 0 0 2px rgba(62,146,123,0.2);
+}
+
+.input-password i {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #94a3b8;
+    font-size: 18px;
+    transition: color 0.2s ease;
+}
+
+.input-password i:hover {
+    color: #3e927b;
+}
+
+/* Dark mode - input password */
+body.dark .input-password i {
+    color: #64748b;
+}
+
+body.dark .input-password i:hover {
+    color: #2dd4bf;
+}
+
+/* ========== THEME TOGGLE ========== */
+.theme-toggle {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    border-radius: 30px;
+    padding: 6px 14px;
+    cursor: pointer;
+    font-size: 13px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+}
+
+.theme-toggle:hover {
+    background: rgba(255,255,255,0.35);
+    transform: scale(1.02);
+}
+
 .theme-toggle i {
     font-size: 14px;
     transition: transform 0.3s ease, color 0.3s ease;
 }
 
 .theme-toggle i.fa-sun {
-    color: #faf9f8;
-    text-shadow: 0 0 4px rgba(245, 244, 243, 0.5);
+    color: #facc15;
+    text-shadow: 0 0 6px rgba(250, 204, 21, 0.5);
 }
 
 .theme-toggle i.fa-moon {
     color: #cbd5e1;
-    text-shadow: 0 0 4px rgba(203, 213, 225, 0.5);
+    text-shadow: 0 0 6px rgba(203, 213, 225, 0.5);
+}
+
+.theme-toggle:hover i {
+    transform: rotate(15deg);
+}
+
+/* Modo Dark - ajuste do botão theme-toggle */
+body.dark .theme-toggle {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+body.dark .theme-toggle:hover {
+    background: rgba(0,0,0,0.5);
 }

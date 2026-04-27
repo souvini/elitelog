@@ -169,23 +169,68 @@ function renderizarEstatisticas(servicos) {
     statsContainer.innerHTML = html + `</div>`;
 }
 
+// ========== MOSTRAR/OCULTAR SENHA ==========
+function initPasswordToggle() {
+    const togglePassword = document.getElementById("toggleLoginPass");
+    const loginPass = document.getElementById("loginPass");
+
+    if (togglePassword && loginPass) {
+        // Remover evento anterior para evitar duplicação
+        const newToggle = togglePassword.cloneNode(true);
+        togglePassword.parentNode.replaceChild(newToggle, togglePassword);
+        
+        newToggle.addEventListener("click", function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const isPassword = loginPass.getAttribute("type") === "password";
+            
+            if (isPassword) {
+                loginPass.setAttribute("type", "text");
+                this.className = "fa-regular fa-eye-slash";
+            } else {
+                loginPass.setAttribute("type", "password");
+                this.className = "fa-regular fa-eye";
+            }
+        });
+    }
+}
+
 // ========== FUNÇÕES DE LOGIN ==========
 window.abrirLoginAdmin = function () {
-    const loginOverlay = document.getElementById("loginOverlay");
-    loginOverlay.style.display = "flex";
+    const overlay = document.getElementById("loginOverlay");
+    if (!overlay) return;
+
+    overlay.style.display = "flex";
+
     document.getElementById("loginUser").value = "";
     document.getElementById("loginPass").value = "";
-    document.getElementById("loginError").textContent = "";
+    document.getElementById("loginError").innerHTML = "";
+    
+    // Reset do campo de senha para password
+    const loginPass = document.getElementById("loginPass");
+    const toggleIcon = document.getElementById("toggleLoginPass");
+    
+    if (loginPass) {
+        loginPass.setAttribute("type", "password");
+    }
+    if (toggleIcon) {
+        toggleIcon.className = "fa-regular fa-eye";
+    }
+    
+    // Reinicializar o toggle
+    initPasswordToggle();
 };
 
 window.fecharLogin = function () {
-    const loginOverlay = document.getElementById("loginOverlay");
-    loginOverlay.style.display = "none";
+    const overlay = document.getElementById("loginOverlay");
+    if (overlay) overlay.style.display = "none";
 };
 
+// LOGIN
 window.fazerLogin = async function () {
-    const usuario = document.getElementById("loginUser").value;
-    const senha = document.getElementById("loginPass").value;
+    const usuario = document.getElementById("loginUser")?.value.trim();
+    const senha = document.getElementById("loginPass")?.value.trim();
     const errorSpan = document.getElementById("loginError");
 
     if (!usuario || !senha) {
@@ -197,45 +242,57 @@ window.fazerLogin = async function () {
         const res = await fetch(`/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            credentials: 'include',
+            credentials: "include",
             body: JSON.stringify({ usuario, senha })
         });
+
+        if (!res.ok) throw new Error("Falha na requisição");
 
         const data = await res.json();
 
         if (data.ok) {
             isAdmin = true;
             localStorage.setItem("isAdmin", "true");
-            const loginOverlay = document.getElementById("loginOverlay");
-            loginOverlay.style.display = "none";
+
+            fecharLogin();
             atualizarInterfaceAdmin();
             carregarServicos();
-            alert("Login realizado com sucesso!");
+
+            alert('<i class="fa-solid fa-check-circle"></i> Login realizado com sucesso!');
         } else {
             errorSpan.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Usuário ou senha incorretos';
         }
+
     } catch (err) {
         console.error("Erro no login:", err);
         errorSpan.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Erro de conexão com o servidor';
     }
 };
 
+// LOGOUT
 window.logout = async function () {
-    if (confirm('<i class="fa-solid fa-question-circle"></i> Deseja sair do modo administrador?')) {
-        try {
-            await fetch(`/logout`, {
-                method: "POST",
-                credentials: 'include'
-            });
-        } catch (e) { }
-        localStorage.removeItem("isAdmin");
-        isAdmin = false;
-        atualizarInterfaceAdmin();
-        carregarServicos();
-        alert('<i class="fa-solid fa-arrow-right-from-bracket"></i> Você voltou ao modo visitante');
+    const confirmar = confirm('<i class="fa-solid fa-question-circle"></i> Deseja sair do modo administrador?');
+    if (!confirmar) return;
+
+    try {
+        await fetch(`/logout`, {
+            method: "POST",
+            credentials: "include"
+        });
+    } catch (e) {
+        console.warn("Erro ao fazer logout no servidor");
     }
+
+    localStorage.removeItem("isAdmin");
+    isAdmin = false;
+
+    atualizarInterfaceAdmin();
+    carregarServicos();
+
+    alert('<i class="fa-solid fa-arrow-right-from-bracket"></i> Você voltou ao modo visitante');
 };
 
+// UI ADMIN
 function atualizarInterfaceAdmin() {
     if (isAdmin) {
         userTypeBadge.style.display = "inline-flex";
@@ -248,28 +305,40 @@ function atualizarInterfaceAdmin() {
     }
 }
 
-// Iniciar como visitante
+// INICIAR SESSÃO
 function iniciarSessao() {
     const mainContainer = document.getElementById("mainContainer");
-    const loginOverlay = document.getElementById("loginOverlay");
-    mainContainer.style.display = "block";
-    loginOverlay.style.display = "none";
+    const overlay = document.getElementById("loginOverlay");
+
+    if (mainContainer) mainContainer.style.display = "block";
+    if (overlay) overlay.style.display = "none";
 
     const savedAdmin = localStorage.getItem("isAdmin");
-    if (savedAdmin === "true") {
-        isAdmin = true;
-    } else {
-        isAdmin = false;
-        localStorage.setItem("isAdmin", "false");
-    }
+    isAdmin = savedAdmin === "true";
 
     atualizarInterfaceAdmin();
     carregarCidades();
     carregarServicos();
 }
 
-// Iniciar automaticamente como visitante
-iniciarSessao();
+// ENTER PARA LOGAR E CONFIGURAR SENHA
+document.addEventListener("DOMContentLoaded", () => {
+    const loginPass = document.getElementById("loginPass");
+
+    if (loginPass) {
+        loginPass.addEventListener("keypress", function (e) {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                fazerLogin();
+            }
+        });
+    }
+    
+    // Configurar o toggle de senha
+    initPasswordToggle();
+    
+    iniciarSessao();
+});
 
 // Abas
 document.querySelectorAll(".tab-btn").forEach(btn => {

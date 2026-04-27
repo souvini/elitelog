@@ -13,19 +13,33 @@
 
 <body>
     <!-- Login Overlay -->
-    <div id="loginOverlay" style="display: none;">
-        <div class="login-box">
-            <i class="fas fa-lock" style="font-size: 48px; color: #3e927b; margin-bottom: 15px;"></i>
-            <h3>Login Administrador</h3>
-            <p style="margin-bottom: 20px;">Apenas para administradores</p>
-            <input type="text" id="loginUser" placeholder="Usuário">
+<div id="loginOverlay" style="display: none;">
+    <div class="login-box">
+        <i class="fas fa-lock login-icon"></i>
+        <h3>Login Administrador</h3>
+        <p class="login-subtitle">Apenas para administradores</p>
+
+        <input type="text" id="loginUser" placeholder="Usuário">
+
+        <!-- Campo senha com ícone -->
+        <div class="input-password">
             <input type="password" id="loginPass" placeholder="Senha">
-            <button onclick="fazerLogin()"><i class="fas fa-sign-in-alt"></i> Entrar como Admin</button>
-            <div id="loginError" class="login-error"></div>
-            <button onclick="fecharLogin()" style="background: #6b7280; margin-top: 10px;"><i class="fas fa-arrow-left"></i> Voltar ao Modo Visitante</button>
-            <small style="display: block; margin-top: 15px;">Admin: admin / 123456</small>
+            <i class="fa-regular fa-eye" id="toggleLoginPass"></i>
         </div>
+
+        <button onclick="fazerLogin()">
+            <i class="fas fa-sign-in-alt"></i> Entrar como Admin
+        </button>
+
+        <div id="loginError" class="login-error"></div>
+
+        <button onclick="fecharLogin()" class="btn-secondary">
+            <i class="fas fa-arrow-left"></i> Voltar ao Modo Visitante
+        </button>
+
+        <small class="login-hint">Admin: admin / 123456</small>
     </div>
+</div>
 
     <div class="container" id="mainContainer" style="display: none;">
         <!-- Botões superiores -->

@@ -183,17 +183,17 @@ window.fazerLogin = async function () {
             window.fecharLogin();
             atualizarInterfaceAdmin();
             carregarServicos();
-            alert('<i class="fa-solid fa-check-circle"></i> Login realizado com sucesso!');
+            alert("Login realizado com sucesso!");
         } else {
-            errorSpan.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Usuário ou senha incorretos';
+            errorSpan.innerHTML = 'Usuário ou senha incorretos';
         }
     } catch (err) {
-        errorSpan.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Erro de conexão com o servidor';
+        errorSpan.innerHTML = 'Erro de conexão com o servidor';
     }
 };
 
 window.logout = async function () {
-    if (!confirm('<i class="fa-solid fa-question-circle"></i> Deseja sair do modo administrador?')) return;
+    if (!confirm('Deseja sair do modo administrador?')) return;
     
     try { await fetch(`/logout`, { method: "POST", credentials: "include" }); } catch(e) {}
     
@@ -201,7 +201,7 @@ window.logout = async function () {
     isAdmin = false;
     atualizarInterfaceAdmin();
     carregarServicos();
-    alert('<i class="fa-solid fa-arrow-right-from-bracket"></i> Você voltou ao modo visitante');
+    alert('Você voltou ao modo visitante');
 };
 
 function atualizarInterfaceAdmin() {
@@ -397,7 +397,7 @@ async function carregarCidades() {
             cidadeInput.placeholder = "Digite o nome da cidade";
         }
     } catch (err) {
-        showErrorMsg('<i class="fa-solid fa-circle-exclamation"></i> Erro ao carregar cidades.');
+        showErrorMsg("Erro ao carregar cidades.");
         if (cidadeInput) cidadeInput.placeholder = "Erro ao carregar";
     } finally { if (loadingIndicator) loadingIndicator.style.display = "none"; }
 }
@@ -475,13 +475,13 @@ if (form) {
         };
         
         if (!dados.operador || !dados.servico || !dados.nome || !dados.placa || !dados.cidade) {
-            return showErrorMsg('<i class="fa-solid fa-circle-exclamation"></i> Preencha todos os campos!');
+            return showErrorMsg("Preencha todos os campos!");
         }
         if (cidades.length > 0 && !cidades.includes(dados.cidade)) {
-            return showErrorMsg('<i class="fa-solid fa-circle-exclamation"></i> Cidade inválida!');
+            return showErrorMsg("Cidade inválida! Selecione da lista.");
         }
         if (!validarPlaca(dados.placa)) {
-            return showErrorMsg('<i class="fa-solid fa-circle-exclamation"></i> Placa inválida! Use AAA-1234 ou ABC1D23');
+            return showErrorMsg("Placa inválida! Use AAA-1234 ou ABC1D23");
         }
         
         if (submitBtn) submitBtn.disabled = true;
@@ -501,7 +501,7 @@ if (form) {
                 if (document.getElementById("tab-list")?.classList.contains("active")) carregarServicos();
             }
         } catch (err) {
-            showErrorMsg('<i class="fa-solid fa-circle-exclamation"></i> Erro de conexão!');
+            showErrorMsg("Erro de conexão com o servidor!");
         } finally {
             if (loadingDiv) loadingDiv.style.display = "none";
             if (submitBtn) submitBtn.disabled = false;

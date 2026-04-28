@@ -521,7 +521,7 @@ window.toggleTheme = function() {
         if (body.classList.contains('dark')) {
             body.classList.remove('dark');
             localStorage.setItem('theme', 'light');
-            if (themeIcon) { themeIcon.className = 'fas fa-sun'; themeIcon.style.color = '#f59e0b'; }
+            if (themeIcon) { themeIcon.className = 'fas fa-sun'; themeIcon.style.color = '#f7f7f7'; }
             if (themeText) themeText.innerHTML = 'Light';
         } else {
             body.classList.add('dark');
@@ -542,7 +542,7 @@ if (savedTheme === 'dark') {
     if (themeIcon) { themeIcon.className = 'fas fa-moon'; themeIcon.style.color = '#cbd5e1'; }
     if (themeText) themeText.innerHTML = 'Dark';
 } else {
-    if (themeIcon) { themeIcon.className = 'fas fa-sun'; themeIcon.style.color = '#f59e0b'; }
+    if (themeIcon) { themeIcon.className = 'fas fa-sun'; themeIcon.style.color = '#f3f0ec'; }
     if (themeText) themeText.innerHTML = 'Light';
 }
 

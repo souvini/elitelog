@@ -26,9 +26,9 @@ const statsContainer = document.getElementById("statsContainer");
 function obterRotaPorCidade(cidade) {
     const ROTAS = {
         "Rota Horizonte": ["Horizonte", "Pacajus", "Chorozinho", "Ocara"],
-        "Rota Oeste": ["Caucaia", "São Gonçalo do Amarante", "Paracuru", "São José do Ribamar"],
+        "Rota Oeste": ["Caucaia", "São Gonçalo do Amarante", "Paracuru", "Pecém"],
         "Rota Sul": ["Maracanaú", "Maranguape", "Pacatuba", "Guaiúba"],
-        "Rota Norte": ["Fortaleza", "Aquiraz", "Eusébio", "Itaitinga"],
+        "Rota Cascavel": ["Cascavel", "Aquiraz", "Beberibe", "Pindoretama"],
         "Rota Sertão Central": ["Quixadá", "Quixeramobim", "Senador Pompeu", "Mombaça"],
         "Rota Vale do Jaguaribe": ["Limoeiro do Norte", "Russas", "Morada Nova", "Jaguaribe"],
         "Rota Cariri": ["Juazeiro do Norte", "Crato", "Barbalha", "Missão Velha"],

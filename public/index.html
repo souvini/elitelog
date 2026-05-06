@@ -6,73 +6,103 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Elite Log - Sistema de Solicitação de Serviços</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%233e927b'/%3E%3Ctext x='50' y='68' text-anchor='middle' font-size='48' fill='white' font-family='Arial, sans-serif' font-weight='bold'%3EEL%3C/text%3E%3C/svg%3E">
-    <!-- Fallback para navegadores antigos -->
     <link rel="shortcut icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%233e927b'/%3E%3Ctext x='50' y='68' text-anchor='middle' font-size='48' fill='white' font-family='Arial' font-weight='bold'%3EEL%3C/text%3E%3C/svg%3E">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 
-
-
 <body>
-    <!-- Login Overlay -->
-<div id="loginOverlay" style="display: none;">
-    <div class="login-box">
-        <i class="fas fa-lock login-icon"></i>
-        <h3>Login Administrador</h3>
-        <p class="login-subtitle">Apenas para administradores</p>
+    <!-- Header Fixo com Logo e Menu -->
+    <header class="main-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <i class="fas fa-truck-fast"></i>
+                <div class="logo-text">
+                    <h1>ELITE LOG</h1>
+                    <span>Sistema de Solicitação de Serviços</span>
+                </div>
+            </div>
 
-        <input type="text" id="loginUser" placeholder="Usuário">
+            <!-- Botão Menu -->
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+                <span>MENU</span>
+            </button>
 
-        <!-- Campo senha com ícone -->
-        <div class="input-password">
-            <input type="password" id="loginPass" placeholder="Senha">
-            <i class="fa-regular fa-eye" id="toggleLoginPass"></i>
+            <!-- Menu Dropdown -->
+            <div class="menu-dropdown" id="menuDropdown">
+                <div class="menu-content">
+                    <div class="menu-section">
+                        <h3><i class="fas fa-navigation"></i> Navegação</h3>
+                        <button class="nav-btn" data-nav="form">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Agendamento</span>
+                        </button>
+                        <button class="nav-btn" data-nav="list">
+                            <i class="fas fa-list"></i>
+                            <span>Serviços</span>
+                        </button>
+                    </div>
+
+                    <div class="menu-divider"></div>
+
+                    <div class="menu-section">
+                        <h3><i class="fas fa-cog"></i> Configurações</h3>
+                        <button class="theme-toggle" id="themeToggle">
+                            <i class="fas" id="themeIcon"></i>
+                            <span id="themeText">Dark</span>
+                        </button>
+                        <button id="loginAdminBtn" class="admin-login-btn">
+                            <i class="fas fa-user-shield"></i>
+                            <span>Admin</span>
+                        </button>
+                        <span id="userTypeBadge" class="admin-badge" style="display: none;">
+                            <i class="fas fa-crown"></i> Administrador
+                        </span>
+                        <button id="logoutBtn" class="logout-btn" style="display: none;">
+                            <i class="fas fa-sign-out-alt"></i> Sair
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
+    </header>
 
-        <button onclick="fazerLogin()">
-            <i class="fas fa-sign-in-alt"></i> Entrar como Admin
-        </button>
+    <!-- Login Overlay -->
+    <div id="loginOverlay" style="display: none;">
+        <div class="login-box">
+            <i class="fas fa-lock login-icon"></i>
+            <h3>Login Administrador</h3>
+            <p class="login-subtitle">Apenas para administradores</p>
 
-        <div id="loginError" class="login-error"></div>
+            <input type="text" id="loginUser" placeholder="Usuário">
 
-        <button onclick="fecharLogin()" class="btn-secondary">
-            <i class="fas fa-arrow-left"></i> Voltar ao Modo Visitante
-        </button>
+            <div class="input-password">
+                <input type="password" id="loginPass" placeholder="Senha">
+                <i class="fa-regular fa-eye" id="toggleLoginPass"></i>
+            </div>
 
-        <small class="login-hint">Admin: admin / 123456</small>
+            <button id="submitLoginBtn">
+                <i class="fas fa-sign-in-alt"></i> Entrar como Admin
+            </button>
+
+            <div id="loginError" class="login-error"></div>
+
+            <button id="closeLoginBtn" class="btn-secondary">
+                <i class="fas fa-arrow-left"></i> Voltar ao Modo Visitante
+            </button>
+
+            <small class="login-hint">Admin: admin / 123456</small>
+        </div>
     </div>
-</div>
 
     <div class="container" id="mainContainer" style="display: none;">
-        <!-- Botões superiores -->
-        <div class="top-buttons">
-            <button id="loginAdminBtn" class="admin-login-btn" onclick="abrirLoginAdmin()"><i class="fas fa-user-shield"></i> Admin</button>
-            <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
-    <i class="fas" id="themeIcon"></i>
-    <span id="themeText">Dark</span>
-</button>
-            <span id="userTypeBadge" class="admin-badge" style="display: none;"><i class="fas fa-crown"></i> Administrador</span>
-            <button id="logoutBtn" class="logout-btn" onclick="logout()" style="display: none;"><i class="fas fa-sign-out-alt"></i> Sair</button>
-        </div>
-
-        <!-- Header centralizado -->
-        <div class="header">
-          <i class="fas fa-truck-fast truck-icon" style="font-size: 48px; color: #14b8a6; margin-bottom: 10px;"></i>
-        <h1>ELITE LOG</h1>
-        <div class="subtitle">Sistema de Solicitação de Serviços</div>
-        </div>
-
-        <!-- Abas -->
-        <div class="tabs">
-            <button class="tab-btn active" data-tab="form"><i class="fas fa-calendar-alt"></i> Agendamento</button>
-            <button class="tab-btn" data-tab="list"><i class="fas fa-list"></i> Serviços</button>
-        </div>
-
-        <!-- Aba Formulário -->
+        <!-- Abas removidas - agora os botões estão no menu -->
+        
+        <!-- Aba Formulário (ativa por padrão) -->
         <div class="tab-content active" id="tab-form">
-            <form id="form">
+            <form id="serviceForm">
                 <div class="form-group">
                     <label><i class="fas fa-user"></i> Operador <span class="required">*</span></label>
                     <input type="text" id="operador" placeholder="Digite o nome do operador" required autocomplete="off">
@@ -125,9 +155,9 @@
                 </div>
                 <select id="filterStatus" class="filter-status">
                     <option value="">Todos os status</option>
-                    <option value="rota"><i class="fas fa-check-circle"></i> Rota Pré-montada</option>
-                    <option value="espera"><i class="fas fa-clock"></i> Em espera</option>
-                    <option value="finalizado"><i class="fas fa-flag-checkered"></i> Finalizado</option>
+                    <option value="rota">Rota Pré-montada</option>
+                    <option value="espera">Em espera</option>
+                    <option value="finalizado">Finalizado</option>
                 </select>
                 <button class="refresh-btn" id="refreshBtn"><i class="fas fa-sync-alt"></i> Atualizar</button>
             </div>
@@ -142,54 +172,42 @@
             <div class="pagination" id="pagination"></div>
         </div>
     </div>
-<!-- Footer -->
+
+    <!-- Footer (sem o título Elite Log repetido) -->
     <footer class="main-footer">
         <div class="footer-content">
             <div class="footer-section">
-                <h3><i class="fas fa-truck-fast"></i> Elite Log</h3>
+                <h3><i class="fas fa-truck-fast"></i> Sobre</h3>
                 <p>Sistema de Solicitação de Serviços especializado em logística. Excelência em atendimento e agilidade na execução.</p>
-                
             </div>
 
             <div class="footer-section">
                 <h3><i class="fas fa-link"></i> Links Rápidos</h3>
                 <ul>
-                    <li><a href="#" onclick="document.querySelector('.tab-btn[data-tab=\'form\']').click(); return false;"><i class="fas fa-calendar-alt"></i> Novo Agendamento</a></li>
-                    <li><a href="#" onclick="document.querySelector('.tab-btn[data-tab=\'list\']').click(); return false;"><i class="fas fa-list"></i> Ver Serviços</a></li>
-                    <li><a href="#" onclick="abrirLoginAdmin(); return false;"><i class="fas fa-user-shield"></i> Área Administrativa</a></li>
+                    <li><a href="#" class="footer-nav-link" data-nav="form"><i class="fas fa-calendar-alt"></i> Novo Agendamento</a></li>
+                    <li><a href="#" class="footer-nav-link" data-nav="list"><i class="fas fa-list"></i> Ver Serviços</a></li>
+                    <li><a href="#" id="footerAdminLink"><i class="fas fa-user-shield"></i> Área Administrativa</a></li>
                     <li><a href="#"><i class="fas fa-question-circle"></i> Central de Ajuda</a></li>
                 </ul>
             </div>
 
-            
-
             <div class="footer-section">
                 <h3><i class="fas fa-phone-alt"></i> Contato</h3>
                 <ul class="contact-info">
-                    <li><i class="fas fa-phone"></i>1026</li>
+                    <li><i class="fas fa-phone"></i> 1026</li>
                     <li><i class="fab fa-whatsapp"></i> (85) 99234-8601</li>
                     <li><i class="fas fa-envelope"></i> contato@elitelog.com.br</li>
                     <li><i class="fas fa-map-marker-alt"></i> Fortaleza, CE - Brasil</li>
                 </ul>
             </div>
         </div>
-        
+
         <div class="footer-bottom">
             <p>&copy; 2026 Elite Log - Sistema de Solicitação de Serviços. Todos os direitos reservados.</p>
-            <p>Desenvolvido com para excelência em logística | <a href="#">Política de Privacidade</a> | <a href="#">Termos de Uso</a></p>
+            <p>Desenvolvido para excelência em logística | <a href="#">Política de Privacidade</a> | <a href="#">Termos de Uso</a></p>
         </div>
     </footer>
 
-    <script>
-    
-        
-
-        
-
-
-        
-
-    </script>
     <script src="/static/js/script.js"></script>
 </body>
 

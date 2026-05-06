@@ -5,7 +5,7 @@ let todosServicos = [], cidades = [], currentPage = 1, itemsPerPage = 10;
 const userTypeBadge = document.getElementById("userTypeBadge");
 const logoutBtn = document.getElementById("logoutBtn");
 const loginAdminBtn = document.getElementById("loginAdminBtn");
-const form = document.getElementById("form");
+const form = document.getElementById("serviceForm");
 const submitBtn = document.getElementById("submitBtn");
 const loadingDiv = document.getElementById("loading");
 const successDiv = document.getElementById("msg");
@@ -21,6 +21,76 @@ const loadingTable = document.getElementById("loadingTable");
 const tableContent = document.getElementById("tableContent");
 const paginationDiv = document.getElementById("pagination");
 const statsContainer = document.getElementById("statsContainer");
+
+// ========== MENU DROPDOWN ==========
+const menuToggle = document.getElementById("menuToggle");
+const menuDropdown = document.getElementById("menuDropdown");
+
+if (menuToggle && menuDropdown) {
+    menuToggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        menuToggle.classList.toggle("active");
+        menuDropdown.classList.toggle("active");
+    });
+
+    // Fechar menu ao clicar fora
+    document.addEventListener("click", (e) => {
+        if (!menuToggle.contains(e.target) && !menuDropdown.contains(e.target)) {
+            menuToggle.classList.remove("active");
+            menuDropdown.classList.remove("active");
+        }
+    });
+
+    // Fechar menu ao clicar em qualquer botão dentro
+    const allButtons = menuDropdown.querySelectorAll("button");
+    allButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+            menuToggle.classList.remove("active");
+            menuDropdown.classList.remove("active");
+        });
+    });
+}
+
+// ========== NAVEGAÇÃO DO MENU ==========
+const navBtns = document.querySelectorAll(".nav-btn");
+if (navBtns.length) {
+    navBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+            const navTarget = btn.dataset.nav;
+            if (navTarget === "form") {
+                document.getElementById("tab-form").classList.add("active");
+                document.getElementById("tab-list").classList.remove("active");
+            } else if (navTarget === "list") {
+                document.getElementById("tab-list").classList.add("active");
+                document.getElementById("tab-form").classList.remove("active");
+                carregarServicos();
+            }
+            
+            // Atualizar estado ativo dos botões
+            navBtns.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+        });
+    });
+}
+
+// ========== FOOTER NAVIGATION ==========
+const footerNavLinks = document.querySelectorAll(".footer-nav-link");
+if (footerNavLinks.length) {
+    footerNavLinks.forEach(link => {
+        link.addEventListener("click", (e) => {
+            e.preventDefault();
+            const navTarget = link.dataset.nav;
+            if (navTarget === "form") {
+                document.getElementById("tab-form").classList.add("active");
+                document.getElementById("tab-list").classList.remove("active");
+            } else if (navTarget === "list") {
+                document.getElementById("tab-list").classList.add("active");
+                document.getElementById("tab-form").classList.remove("active");
+                carregarServicos();
+            }
+        });
+    });
+}
 
 // ========== DICIONÁRIO DE ROTAS ==========
 function obterRotaPorCidade(cidade) {
@@ -147,13 +217,11 @@ window.fecharLogin = function () {
     const userInput = document.getElementById("loginUser");
     const passInput = document.getElementById("loginPass");
     const errorSpan = document.getElementById("loginError");
-    const toggleIcon = document.getElementById("togglePassword");
     
     if (userInput) userInput.value = "";
     if (passInput) passInput.value = "";
     if (errorSpan) errorSpan.innerHTML = "";
     if (passInput) passInput.type = "password";
-    if (toggleIcon) toggleIcon.className = "fa-regular fa-eye";
 };
 
 window.fazerLogin = async function () {
@@ -183,12 +251,19 @@ window.fazerLogin = async function () {
             window.fecharLogin();
             atualizarInterfaceAdmin();
             carregarServicos();
-            alert("Login realizado com sucesso!");
+            // Atualizar botão Admin no menu
+            const menuLoginBtn = document.getElementById("loginAdminBtn");
+            const menuLogoutBtn = document.getElementById("logoutBtn");
+            const menuBadge = document.getElementById("userTypeBadge");
+            if (menuLoginBtn) menuLoginBtn.style.display = "none";
+            if (menuLogoutBtn) menuLogoutBtn.style.display = "flex";
+            if (menuBadge) menuBadge.style.display = "flex";
+            showCustomAlert('<i class="fa-solid fa-check-circle"></i> Login realizado com sucesso!', 'success');
         } else {
-            errorSpan.innerHTML = 'Usuário ou senha incorretos';
+            errorSpan.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Usuário ou senha incorretos';
         }
     } catch (err) {
-        errorSpan.innerHTML = 'Erro de conexão com o servidor';
+        errorSpan.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Erro de conexão com o servidor';
     }
 };
 
@@ -201,7 +276,16 @@ window.logout = async function () {
     isAdmin = false;
     atualizarInterfaceAdmin();
     carregarServicos();
-    alert('Você voltou ao modo visitante');
+    
+    // Atualizar botão Admin no menu
+    const menuLoginBtn = document.getElementById("loginAdminBtn");
+    const menuLogoutBtn = document.getElementById("logoutBtn");
+    const menuBadge = document.getElementById("userTypeBadge");
+    if (menuLoginBtn) menuLoginBtn.style.display = "flex";
+    if (menuLogoutBtn) menuLogoutBtn.style.display = "none";
+    if (menuBadge) menuBadge.style.display = "none";
+    
+    showCustomAlert('<i class="fa-solid fa-sign-out-alt"></i> Você voltou ao modo visitante', 'info');
 };
 
 function atualizarInterfaceAdmin() {
@@ -229,18 +313,6 @@ function iniciarSessao() {
     carregarServicos();
 }
 
-// ========== ABAS ==========
-document.querySelectorAll(".tab-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-        const tabId = btn.dataset.tab;
-        document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-        document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
-        btn.classList.add("active");
-        document.getElementById(`tab-${tabId}`).classList.add("active");
-        if (tabId === "list") carregarServicos();
-    });
-});
-
 // ========== API CALLS ==========
 function showCustomAlert(message, type = 'info') {
     const alertDiv = document.createElement('div');
@@ -258,32 +330,32 @@ function showCustomAlert(message, type = 'info') {
 
 window.finalizarServico = async function(id) {
     if (!isAdmin) return showCustomAlert('<i class="fa-solid fa-lock"></i> Apenas administradores podem finalizar!', 'error');
-    if (!confirm('<i class="fa-solid fa-question-circle"></i> Finalizar este serviço?')) return;
+    if (!confirm('Finalizar este serviço?')) return;
     try {
         const res = await fetch(`/finalizar/${id}`, { method: "PUT", credentials: 'include' });
         if (res.ok) {
-            showCustomAlert('<i class="fa-solid fa-check-circle"></i> Finalizado!', 'success');
+            showCustomAlert('<i class="fa-solid fa-check-circle"></i> Serviço finalizado!', 'success');
             carregarServicos();
         }
     } catch { showCustomAlert('<i class="fa-solid fa-circle-exclamation"></i> Erro ao finalizar!', 'error'); }
 };
 
 window.reativarServico = async function(id) {
-    if (!isAdmin) return alert('<i class="fa-solid fa-lock"></i> Apenas administradores podem reativar!');
-    if (!confirm('<i class="fa-solid fa-question-circle"></i> Reativar este serviço?')) return;
+    if (!isAdmin) return showCustomAlert('<i class="fa-solid fa-lock"></i> Apenas administradores podem reativar!', 'error');
+    if (!confirm('Reativar este serviço?')) return;
     try {
         const res = await fetch(`/reativar/${id}`, { method: "PUT", credentials: 'include' });
-        if (res.ok) { alert('<i class="fa-solid fa-check-circle"></i> Reativado!'); carregarServicos(); }
-    } catch { alert('<i class="fa-solid fa-circle-exclamation"></i> Erro ao reativar!'); }
+        if (res.ok) { showCustomAlert('<i class="fa-solid fa-check-circle"></i> Serviço reativado!', 'success'); carregarServicos(); }
+    } catch { showCustomAlert('<i class="fa-solid fa-circle-exclamation"></i> Erro ao reativar!', 'error'); }
 };
 
 window.deletarServico = async function(id) {
-    if (!isAdmin) return alert('<i class="fa-solid fa-lock"></i> Apenas administradores podem deletar!');
-    if (!confirm('<i class="fa-solid fa-triangle-exclamation"></i> Deletar permanentemente?')) return;
+    if (!isAdmin) return showCustomAlert('<i class="fa-solid fa-lock"></i> Apenas administradores podem deletar!', 'error');
+    if (!confirm('Deletar permanentemente este serviço?')) return;
     try {
         const res = await fetch(`/deletar/${id}`, { method: "DELETE", credentials: 'include' });
-        if (res.ok) { alert('<i class="fa-solid fa-trash-can"></i> Deletado!'); carregarServicos(); }
-    } catch { alert('<i class="fa-solid fa-circle-exclamation"></i> Erro ao deletar!'); }
+        if (res.ok) { showCustomAlert('<i class="fa-solid fa-trash-can"></i> Serviço deletado!', 'success'); carregarServicos(); }
+    } catch { showCustomAlert('<i class="fa-solid fa-circle-exclamation"></i> Erro ao deletar!', 'error'); }
 };
 
 async function carregarServicos() {
@@ -312,7 +384,7 @@ function aplicarFiltro() {
     
     if (texto) filtrados = filtrados.filter(s =>
         (s.nome?.toLowerCase().includes(texto)) ||
-        (s.placa?.includes(texto)) ||
+        (s.placa?.toLowerCase().includes(texto)) ||
         (s.cidade?.toLowerCase().includes(texto)) ||
         (s.operador?.toLowerCase().includes(texto))
     );
@@ -446,7 +518,7 @@ function validarPlaca(p) {
 // ========== FEEDBACK ==========
 function showErrorMsg(m) {
     if (errorDiv) {
-        errorDiv.innerHTML = m;
+        errorDiv.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${m}`;
         errorDiv.style.display = "block";
         if (successDiv) successDiv.style.display = "none";
         setTimeout(() => { if (errorDiv) errorDiv.style.display = "none"; }, 4000);
@@ -475,13 +547,13 @@ if (form) {
         };
         
         if (!dados.operador || !dados.servico || !dados.nome || !dados.placa || !dados.cidade) {
-            return showErrorMsg("Preencha todos os campos!");
+            return showErrorMsg("Preencha todos os campos obrigatórios!");
         }
         if (cidades.length > 0 && !cidades.includes(dados.cidade)) {
-            return showErrorMsg("Cidade inválida! Selecione da lista.");
+            return showErrorMsg("Cidade inválida! Selecione uma cidade da lista de sugestões.");
         }
         if (!validarPlaca(dados.placa)) {
-            return showErrorMsg("Placa inválida! Use AAA-1234 ou ABC1D23");
+            return showErrorMsg("Placa inválida! Use os formatos: AAA-1234 ou ABC1D23");
         }
         
         if (submitBtn) submitBtn.disabled = true;
@@ -499,6 +571,8 @@ if (form) {
                 if (form) form.reset();
                 if (cidadeInput) cidadeInput.value = "";
                 if (document.getElementById("tab-list")?.classList.contains("active")) carregarServicos();
+            } else {
+                showErrorMsg("Erro ao salvar serviço!");
             }
         } catch (err) {
             showErrorMsg("Erro de conexão com o servidor!");
@@ -521,41 +595,81 @@ window.toggleTheme = function() {
         if (body.classList.contains('dark')) {
             body.classList.remove('dark');
             localStorage.setItem('theme', 'light');
-            if (themeIcon) { themeIcon.className = 'fas fa-sun'; themeIcon.style.color = '#f7f7f7'; }
+            if (themeIcon) { themeIcon.className = 'fas fa-sun'; }
             if (themeText) themeText.innerHTML = 'Light';
         } else {
             body.classList.add('dark');
             localStorage.setItem('theme', 'dark');
-            if (themeIcon) { themeIcon.className = 'fas fa-moon'; themeIcon.style.color = '#cbd5e1'; }
+            if (themeIcon) { themeIcon.className = 'fas fa-moon'; }
             if (themeText) themeText.innerHTML = 'Dark';
         }
         setTimeout(() => { if (themeIcon) themeIcon.style.transform = ''; }, 200);
     }, 100);
 };
 
+// Inicializar Dark Mode
 const savedTheme = localStorage.getItem('theme');
 const themeIcon = document.getElementById('themeIcon');
 const themeText = document.getElementById('themeText');
 
 if (savedTheme === 'dark') {
     document.body.classList.add('dark');
-    if (themeIcon) { themeIcon.className = 'fas fa-moon'; themeIcon.style.color = '#cbd5e1'; }
+    if (themeIcon) themeIcon.className = 'fas fa-moon';
     if (themeText) themeText.innerHTML = 'Dark';
 } else {
-    if (themeIcon) { themeIcon.className = 'fas fa-sun'; themeIcon.style.color = '#f3f0ec'; }
+    if (themeIcon) themeIcon.className = 'fas fa-sun';
     if (themeText) themeText.innerHTML = 'Light';
+}
+
+// ========== EVENT LISTENERS PARA BOTÕES DO MENU ==========
+// Botão Admin do menu
+const menuAdminBtn = document.getElementById("loginAdminBtn");
+if (menuAdminBtn) {
+    menuAdminBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        window.abrirLoginAdmin();
+    });
+}
+
+// Botão Logout do menu
+const menuLogoutBtn = document.getElementById("logoutBtn");
+if (menuLogoutBtn) {
+    menuLogoutBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        window.logout();
+    });
+}
+
+// Botão Theme Toggle do menu
+const menuThemeToggle = document.getElementById("themeToggle");
+if (menuThemeToggle) {
+    const newThemeToggle = menuThemeToggle.cloneNode(true);
+    menuThemeToggle.parentNode.replaceChild(newThemeToggle, menuThemeToggle);
+    newThemeToggle.addEventListener("click", (e) => {
+        e.preventDefault();
+        window.toggleTheme();
+    });
+}
+
+// Footer Admin Link
+const footerAdminLink = document.getElementById("footerAdminLink");
+if (footerAdminLink) {
+    footerAdminLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        window.abrirLoginAdmin();
+    });
 }
 
 // ========== UTILIDADES ==========
 function normalizarPlaca(p) { return p.replace(/[-\s]/g, '').toUpperCase(); }
 function escapeHtml(t) { if (!t) return ''; return t.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
 
-// ========== EVENTOS ==========
+// ========== EVENTOS DE FILTRO ==========
 if (searchInput) searchInput.addEventListener('input', () => { currentPage = 1; aplicarFiltro(); });
 if (filterStatus) filterStatus.addEventListener('change', () => { currentPage = 1; aplicarFiltro(); });
 if (refreshBtn) refreshBtn.addEventListener('click', carregarServicos);
 
-// ========== FECHAR MODAL CLICANDO FORA ==========
+// ========== MODAL E INICIALIZAÇÃO ==========
 document.addEventListener("DOMContentLoaded", () => {
     const loginOverlay = document.getElementById("loginOverlay");
     if (loginOverlay) {
@@ -568,11 +682,23 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
     
-    // Inicializar
     const loginPass = document.getElementById("loginPass");
     if (loginPass) {
         loginPass.addEventListener("keypress", (e) => { if (e.key === "Enter") window.fazerLogin(); });
     }
+    
+    // Botão de submit do login
+    const submitLoginBtn = document.getElementById("submitLoginBtn");
+    if (submitLoginBtn) {
+        submitLoginBtn.addEventListener("click", () => window.fazerLogin());
+    }
+    
+    // Botão fechar login
+    const closeLoginBtn = document.getElementById("closeLoginBtn");
+    if (closeLoginBtn) {
+        closeLoginBtn.addEventListener("click", () => window.fecharLogin());
+    }
+    
     initPasswordToggle();
     iniciarSessao();
 });
